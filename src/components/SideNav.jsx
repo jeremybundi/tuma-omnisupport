@@ -74,20 +74,37 @@ import { usePathname } from "next/navigation";
             </div>
             )}
             
-            <Link href="/"> {/* Link to the homepage */}
-          <button
-          className="flex items-center pl-4 pr-12 py-2 mt-2 rounded-lg hover:bg-[#F3F5F8] focus:bg-gray-200 transition duration-300 ease-in-out"
-          >
-            <Image
-              src={set}
-              alt="Humble Image"
-              width={20}
-              height={20}
-              className="mr-4"
-            />
-            <span className="text-2xl font-medium">Settings</span>
-          </button>
-        </Link>
+            <Link href="/">
+      <button className="flex items-center pl-4 pr-12 py-2 mt-2 rounded-lg  border-white text-white transition duration-300   ease-in-out hover:bg-white hover:border-blue-600 hover:text-blue-600">
+        {/* SVG Settings Icon */}
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="mr-4 transition duration-300 ease-in-out"
+        >
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="M4.93 4.93l1.41 1.41"></path>
+          <path d="M17.66 17.66l1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="M6.34 17.66l-1.41 1.41"></path>
+          <path d="M19.07 4.93l-1.41 1.41"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+
+        {/* Settings Text */}
+        <span className="text-2xl font-medium transition duration-300 ease-in-out">
+          Settings
+        </span>
+      </button>
+    </Link>
         </div>
         {/* Bottom Section */}
         <div className="mt-auto mb-4">

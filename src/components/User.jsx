@@ -39,7 +39,7 @@ export default function User() {
   return (
     <div className="relative font-poppins">
       <div 
-        className="flex cursor-pointer justify-between rounded-md bg-gray-50 p-2 py-1" 
+        className="flex cursor-pointer justify-between rounded-md  p-2 py-1" 
         onClick={handleModalToggle}
       >
         {/* User Image and Placeholder Name */}
@@ -51,8 +51,20 @@ export default function User() {
         <div className="ml-1">
           {/* Use Image component for log.png */}
           <div className="inline-block mt-2">
-            <Image src={logImage} alt="Log" width={25} height={20} />
-          </div>
+          <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="white"  
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="text-white"  
+  >
+    <path d="M6 9l6 6 6-6" />
+  </svg>          </div>
         </div>
       </div>
 
@@ -65,7 +77,7 @@ export default function User() {
           {/* Modal Content */}
           <div className="flex items-center mb-1 border-b ">
             <Image src={userImage} alt="User" width={30} height={40} className="rounded-full mb-1" />
-            <span className="ml-3 text-lg font-medium">Shiqs Imani</span>
+            <span className="ml-3 text-lg text-gray-600 font-medium">Shiqs Imani</span>
           </div>
 
           <div className="space-y-1">
@@ -75,7 +87,7 @@ export default function User() {
               onClick={handleButtonClick}
             >
               <Image src={accountImage} alt="Account" width={24} height={16} />
-              <span className="ml-2 text-lg">Account</span>
+              <span className="ml-2 text-gray-600 text-lg">Account</span>
             </button>
 
             {/* Notification Button */}
@@ -84,7 +96,7 @@ export default function User() {
               onClick={handleButtonClick}
             >
               <Image src={notificationImage} alt="Notification" width={22} height={16} />
-              <span className="ml-2 text-lg">Notification</span>
+              <span className="ml-2 text-gray-600 text-lg">Notification</span>
             </button>
 
             {/* Logout Button */}
@@ -93,7 +105,7 @@ export default function User() {
               onClick={handleButtonClick}
             >
               <Image src={settingImage} alt="Settings" width={22} height={16} />
-              <span className="ml-2 text-lg">Logout</span>
+              <span className="ml-2 text-gray-600 text-lg">Logout</span>
             </button>
           </div>
         </div>

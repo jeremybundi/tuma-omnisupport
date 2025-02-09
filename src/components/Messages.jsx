@@ -4,13 +4,13 @@ import UnreadMessages from "./UnreadMessages";
 import InProgressMessages from "./InProgressMessages";
 import ClosedMessages from "./ClosedMessages";
 
-export default function Messages() {
-  const [activeTab, setActiveTab] = useState("Unread");
+export default function Messages({ onSelectChat }) {  // Accept onSelectChat as a prop
+    const [activeTab, setActiveTab] = useState("Unread");
 
   return (
-    <div className="bg-white p-4 pt-5 flex flex-col shadow-lg rounded-lg">
-      {/* Header with Filter and New Button */}
-      <div className="flex justify-between items-center mb-4">
+<div className="bg-white pt-5 flex flex-col shadow-lg">
+{/* Header with Filter and New Button */}
+      <div className="flex justify-between px-4 items-center mb-">
         <h2 className="text-xl font-semibold">Messages</h2>
         <div className="flex items-center gap-3">
           {/* Custom Filter Icon with Label */}
@@ -56,8 +56,8 @@ export default function Messages() {
 
       {/* Content based on active tab */}
       <div className="mt-4">
-        {activeTab === "Unread" && <UnreadMessages />}
-        {activeTab === "In-Progress" && <InProgressMessages />}
+      {activeTab === "Unread" && <UnreadMessages onSelectChat={onSelectChat} />}
+      {activeTab === "In-Progress" && <InProgressMessages />}
         {activeTab === "Closed" && <ClosedMessages />}
       </div>
     </div>
