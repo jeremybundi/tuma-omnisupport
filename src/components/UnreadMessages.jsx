@@ -10,8 +10,9 @@ export default function UnreadMessages({ onSelectChat }) {
   };
 
   const truncateMessage = (message) => {
-    return message.split(". ")[0] + "...";
+    return message.split("\n")[0] + " ...";
   };
+  
 
   const conversations = Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
@@ -67,20 +68,20 @@ export default function UnreadMessages({ onSelectChat }) {
         {conversations.slice(0, visibleCount).map((msg) => (
           <div
             key={msg.id}
-            className=" py-2 px-3 border-b flex items-start space-x-4 rounded bg-[#F3F5F8] cursor-pointer"
+            className=" py-1 px-3 border-b flex items-start space-x-4 rounded bg-[#F3F5F8] hover:bg-white cursor-pointer"
             onClick={() => {
               console.log("Selecting chat:", msg);
               onSelectChat(msg);
             }}
           >
-            <img src="/images/pic.png" alt="User" className="w-12 h-12 rounded-full" />
+            <img src="/images/pic.png" alt="User" className="w-12 h-12 mb-3 rounded-full" />
 
             <div className="flex-1 mt-1">
               <div className="flex justify-between items-center">
-                <div className="font-medium">{msg.sender}</div>
-                <div className="text-xs text-gray-500">{msg.timestamp}</div>
+                <div className="font-medium font-manrope text-[16px]">{msg.sender}</div>
+                <div className="text-sm  text-gray-400">{msg.timestamp}</div>
               </div>
-              <div className="text-sm text-gray-700">{truncateMessage(msg.message)}</div>
+              <div className="text-sm mt-1 text-gray-500 line-clamp-1">{truncateMessage(msg.message)}</div>
             </div>
           </div>
         ))}

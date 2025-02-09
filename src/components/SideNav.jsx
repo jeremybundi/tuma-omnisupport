@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
   
   export default function SideNav() {
     const pathname = usePathname(); // Get current route
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 
 
     return (

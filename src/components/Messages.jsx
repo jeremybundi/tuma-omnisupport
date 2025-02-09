@@ -1,20 +1,32 @@
-"use client"
 import { useState } from "react";
 import UnreadMessages from "./UnreadMessages";
 import InProgressMessages from "./InProgressMessages";
 import ClosedMessages from "./ClosedMessages";
 
-export default function Messages({ onSelectChat }) {  // Accept onSelectChat as a prop
-    const [activeTab, setActiveTab] = useState("Unread");
+export default function Messages({ onSelectChat }) {
+  const [activeTab, setActiveTab] = useState("Unread");
+  const [filter, setFilter] = useState(""); // State for filtering messages
+  const [sortOrder, setSortOrder] = useState("newest"); // New state for sorting order
+
+  const handleFilterClick = () => {
+    const keyword = prompt("Enter filter keyword:");
+    setFilter(keyword || ""); // Set filter from user input
+    // Optionally add prompt for sorting
+    const sortOption = prompt("Sort by: 'newest' or 'oldest'");
+    setSortOrder(sortOption || "newest"); // Set sort option
+  };
 
   return (
-<div className="bg-white pt-5 flex flex-col shadow-lg">
-{/* Header with Filter and New Button */}
-      <div className="flex justify-between px-4 items-center mb-">
+    <div className="bg-white pt-5 flex flex-col shadow-lg">
+      {/* Header with Filter and New Button */}
+      <div className="flex justify-between px-4 items-center">
         <h2 className="text-xl font-semibold">Messages</h2>
         <div className="flex items-center gap-3">
-          {/* Custom Filter Icon with Label */}
-          <div className="flex items-center gap-1 cursor-pointer text-gray-600">
+          {/* Filter Icon with Clickable Functionality */}
+          <div
+            className="flex items-center gap-1 cursor-pointer text-gray-600"
+            onClick={handleFilterClick}
+          >
             <svg
               width="25"
               height="25"
@@ -56,8 +68,8 @@ export default function Messages({ onSelectChat }) {  // Accept onSelectChat as 
 
       {/* Content based on active tab */}
       <div className="mt-4">
-      {activeTab === "Unread" && <UnreadMessages onSelectChat={onSelectChat} />}
-      {activeTab === "In-Progress" && <InProgressMessages />}
+        {activeTab === "Unread" && <UnreadMessages onSelectChat={onSelectChat} filter={filter} sortOrder={sortOrder} />}
+        {activeTab === "In-Progress" && <InProgressMessages />}
         {activeTab === "Closed" && <ClosedMessages />}
       </div>
     </div>
