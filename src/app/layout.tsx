@@ -1,15 +1,19 @@
+// app/layout.tsx (or _app.js depending on your Next.js version)
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Poppins, Manrope } from "next/font/google"; 
+import "./globals.css"; 
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Define the fonts
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["400", "600", "700"], 
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
+  weight: ["400", "600", "700"], 
 });
 
 export const metadata: Metadata = {
@@ -24,10 +28,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Add the Lufga CDN link here */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Lufga&display=swap"
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.variable} ${manrope.variable} antialiased`}
+        style={{
+          fontFamily: "var(--font-poppins), var(--font-manrope), 'Lufga', sans-serif",
+        }}
       >
-        {children}
+   
+          {children}
+     
       </body>
     </html>
   );
