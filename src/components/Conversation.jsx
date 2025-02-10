@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from 'next/image';
 import { MoreVertical } from "lucide-react";
-import { Paperclip, Smile, MapPin, Send } from "lucide-react";
+import { Paperclip, Smile, Pin, Send } from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import Modal from "../components/Modal1"; // Import Modal component
@@ -119,7 +119,7 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
               <EscalateIssueModal closeModal={() => setIsEscalateModalOpen(false)} />
             )}
 
-            
+
 
             {isEscalateModalOpen && (
               <EscalateIssueModal 
@@ -218,7 +218,7 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
 
     {/* Location Icon */}
     <button className="text-gray-500 hover:text-gray-700 mx-4">
-      <MapPin className="w-7 h-7" />
+      <Pin className="w-7 h-7" />
     </button>
   </div>
 
