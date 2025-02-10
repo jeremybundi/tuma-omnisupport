@@ -63,7 +63,7 @@ export default function UnreadMessages({ onSelectChat }) {
       <div
         ref={containerRef}
         className="flex-1 overflow-hidden space-y-3"
-        style={{ maxHeight: "77vh", overflowY: "auto" }}
+        style={{ maxHeight: "70vh", overflowY: "auto" }}
       >
         {conversations.slice(0, visibleCount).map((msg) => (
           <div
