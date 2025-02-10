@@ -7,7 +7,7 @@ export default function Modal1({ closeModal, openEscalateModal, closeChat }) {
         {/* Close button */}
         <button
           onClick={closeModal}
-          className="absolute top-4 right-5 text-gray-600 hover:text-gray-800 border-2 border-gray-600 rounded-full px-2 font-semibold"
+          className="absolute top-6 right-5 text-gray-600 hover:text-gray-800 border-2 border-gray-600 rounded-full px-2 font-semibold"
         >
           ✕
         </button>
@@ -18,8 +18,8 @@ export default function Modal1({ closeModal, openEscalateModal, closeChat }) {
           <li
             className="flex items-center border-y-2 py-3 cursor-pointer hover:text-blue-600"
             onClick={() => {
-                closeChat();  // Close the chat
-                closeModal(); // Ensure this is being called
+                closeChat();  
+                closeModal(); 
             }}
             >
             Close Chat

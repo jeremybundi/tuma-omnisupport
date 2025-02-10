@@ -119,6 +119,20 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
               <EscalateIssueModal closeModal={() => setIsEscalateModalOpen(false)} />
             )}
 
+            
+
+            {isEscalateModalOpen && (
+              <EscalateIssueModal 
+                closeModal={() => setIsEscalateModalOpen(false)} 
+                goBackToModal1={() => {
+                  setIsEscalateModalOpen(false); 
+                  setIsModalOpen(true);  // Reopen Modal 1
+                }}
+              />
+            )}
+
+
+
 
             {/* Three-dot menu */}
             <div className="relative ">
