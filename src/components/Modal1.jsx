@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from 'lucide-react';
 
 export default function Modal1({ closeModal, openEscalateModal, closeChat }) {
   return (
@@ -15,27 +15,28 @@ export default function Modal1({ closeModal, openEscalateModal, closeChat }) {
         {/* Modal content */}
         <div className="p-6 mt-32">
           <ul className="space-y-4 text-gray-700">
-          <li
-            className="flex items-center border-y-2 py-3 cursor-pointer hover:text-blue-600"
-            onClick={() => {
-                closeChat();  
-                closeModal(); 
-            }}
+            <li
+              className="flex items-center border-y-2 py-3 cursor-pointer hover:text-blue-600"
+              onClick={() => {
+                closeChat();
+                closeModal();
+              }}
             >
-            Close Chat
-            <ChevronRight className="w-5 h-5 ml-auto" />
+              Close Chat
+              <ChevronRight className="w-5 h-5 ml-auto" />
             </li>
 
-
-            <li className="flex items-center border-b-2 pb-3 cursor-pointer hover:text-blue-600"
-                onClick={openEscalateModal}>
+            <li
+              className="flex items-center border-b-2 pb-3 cursor-pointer hover:text-blue-600"
+              onClick={openEscalateModal}
+            >
               Escalate Issue
-              <ChevronRight className="w-5 h-5 ml-auto" />            
+              <ChevronRight className="w-5 h-5 ml-auto" />
             </li>
 
             <li className="flex items-center cursor-pointer border-b-2 pb-3 hover:text-blue-600">
               Assign
-              <ChevronRight className="w-5 h-5 ml-auto" />            
+              <ChevronRight className="w-5 h-5 ml-auto" />
             </li>
           </ul>
         </div>

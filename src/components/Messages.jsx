@@ -1,19 +1,19 @@
-import { useState } from "react";
-import UnreadMessages from "./UnreadMessages";
-import InProgressMessages from "./InProgressMessages";
-import ClosedMessages from "./ClosedMessages";
+import { useState } from 'react';
+import UnreadMessages from './UnreadMessages';
+import InProgressMessages from './InProgressMessages';
+import ClosedMessages from './ClosedMessages';
 
 export default function Messages({ onSelectChat }) {
-  const [activeTab, setActiveTab] = useState("Unread");
-  const [filter, setFilter] = useState(""); // State for filtering messages
-  const [sortOrder, setSortOrder] = useState("newest"); // New state for sorting order
+  const [activeTab, setActiveTab] = useState('Unread');
+  const [filter, setFilter] = useState(''); // State for filtering messages
+  const [sortOrder, setSortOrder] = useState('newest'); // New state for sorting order
 
   const handleFilterClick = () => {
-    const keyword = prompt("Enter filter keyword:");
-    setFilter(keyword || ""); // Set filter from user input
+    const keyword = prompt('Enter filter keyword:');
+    setFilter(keyword || ''); // Set filter from user input
     // Optionally add prompt for sorting
     const sortOption = prompt("Sort by: 'newest' or 'oldest'");
-    setSortOrder(sortOption || "newest"); // Set sort option
+    setSortOrder(sortOption || 'newest'); // Set sort option
   };
 
   return (
@@ -53,12 +53,14 @@ export default function Messages({ onSelectChat }) {
 
       {/* Tabs Section */}
       <div className="flex border-b justify-between mt-8 px-6 mb-4">
-        {["Unread", "In-Progress", "Closed"].map((tab) => (
+        {['Unread', 'In-Progress', 'Closed'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-3 py-2 text-lg font-medium ${
-              activeTab === tab ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500"
+              activeTab === tab
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-500'
             }`}
           >
             {tab}
@@ -68,9 +70,15 @@ export default function Messages({ onSelectChat }) {
 
       {/* Content based on active tab */}
       <div className="mt-4">
-        {activeTab === "Unread" && <UnreadMessages onSelectChat={onSelectChat} filter={filter} sortOrder={sortOrder} />}
-        {activeTab === "In-Progress" && <InProgressMessages />}
-        {activeTab === "Closed" && <ClosedMessages />}
+        {activeTab === 'Unread' && (
+          <UnreadMessages
+            onSelectChat={onSelectChat}
+            filter={filter}
+            sortOrder={sortOrder}
+          />
+        )}
+        {activeTab === 'In-Progress' && <InProgressMessages />}
+        {activeTab === 'Closed' && <ClosedMessages />}
       </div>
     </div>
   );

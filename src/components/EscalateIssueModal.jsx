@@ -1,19 +1,16 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft } from 'lucide-react';
 
 export default function EscalateIssueModal({ closeModal, goBackToModal1 }) {
   return (
     <div className="fixed inset-0 flex justify-end bg-black bg-opacity-50 z-50">
       <div className="w-1/4 h-full bg-white font-poppins text-lg px-4 shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out animate-slide-in">
-        
-      <button
-    onClick={goBackToModal1} 
+        <button
+          onClick={goBackToModal1}
+          className="text-gray-600 hover:text-gray-800 mt-6 p-1"
+        >
+          <ChevronLeft size={30} />
+        </button>
 
-  className="text-gray-600 hover:text-gray-800 mt-6 p-1"
->
-  <ChevronLeft size={30} />
-</button>
-
-        
         {/* Close button */}
         <button
           onClick={closeModal}
@@ -24,10 +21,14 @@ export default function EscalateIssueModal({ closeModal, goBackToModal1 }) {
 
         {/* Escalate Issue Form */}
         <div className="p-6 mt-12">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Escalate Issue</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Escalate Issue
+          </h2>
 
           {/* Reason for Escalation */}
-          <label className="block text-gray-400 mb-2">Reason for Escalation:</label>
+          <label className="block text-gray-400 mb-2">
+            Reason for Escalation:
+          </label>
           <select className="w-full border rounded-lg mb-3 p-2 focus:outline-none focus:ring focus:border-blue-300">
             <option>Technical Issue</option>
             <option>Customer Complaint</option>
@@ -36,7 +37,9 @@ export default function EscalateIssueModal({ closeModal, goBackToModal1 }) {
           </select>
 
           {/* Priority Level */}
-          <label className="block text-gray-400 mt-4 mb-2">Priority Level:</label>
+          <label className="block text-gray-400 mt-4 mb-2">
+            Priority Level:
+          </label>
           <select className="w-full border rounded-lg mb-3 p-2 focus:outline-none focus:ring focus:border-blue-300">
             <option>Low</option>
             <option>Medium</option>
@@ -53,12 +56,14 @@ export default function EscalateIssueModal({ closeModal, goBackToModal1 }) {
           </select>
 
           {/* Additional Notes */}
-          <label className="block text-gray-400 mt-4 mb-2">Additional Notes:</label>
+          <label className="block text-gray-400 mt-4 mb-2">
+            Additional Notes:
+          </label>
           <textarea className="w-full border rounded-lg p-2 h-28 focus:outline-none focus:ring focus:border-blue-300"></textarea>
 
           {/* Submit Button */}
-          <button 
-            onClick={closeModal} 
+          <button
+            onClick={closeModal}
             className="mt-6 bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-700 w-full"
           >
             Submit
