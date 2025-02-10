@@ -135,10 +135,10 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
 
 
             {/* Three-dot menu */}
-            <div className="relative ">
+            <div className="relative border  rounded-md ">
               <button
                 onClick={() => setIsModalOpen(true)} 
-                className="p-2"
+                className="p-1 hover:bg-slate-50"
               >
                 <MoreVertical className="w-5 h-5 text-gray-600" />
               </button>
