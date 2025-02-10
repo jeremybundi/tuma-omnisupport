@@ -152,15 +152,15 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
             {/* Scrollable messages container */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.map((msg, index) => (
-                <div key={index} className={`flex items-center ${msg.sender !== currentUser ? "justify-end" : "justify-start"}`}>
+                <div key={index} className={`flex items-center ${msg.sender === currentUser ? "justify-end" : "justify-start"}`}>
                 {/* If the message is received, show image on the left */}
-                {msg.sender !== currentUser && (
+                {msg.sender === currentUser && (
                   <Image src="/images/mess.png" alt="M" width={40} height={40} className="rounded-full mr-3" />
                 )}
               
                 {/* Message bubble */}
                 <div className={`max-w-lg p-3 rounded-2xl text-[16px] shadow-md 
-                    ${msg.sender === currentUser 
+                    ${msg.sender !== currentUser 
                       ? "bg-gray-200  text-gray-800  mb-2 rounded-bl-none" 
                       : "bg-blue-600 mb-2 text-white rounded-br-none"}`}>
                   <p className="break-words">{msg.message}</p>
@@ -168,7 +168,7 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
                 </div>
               
                 {/* If the message is sent by currentUser, show image on the right */}
-                {msg.sender === currentUser && (
+                {msg.sender !== currentUser && (
                   <Image src="/images/mess.png" alt="M" width={40} height={40} className="rounded-full ml-4" />
                 )}
               </div>
