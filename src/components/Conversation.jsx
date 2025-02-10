@@ -4,17 +4,24 @@ import { MoreVertical } from "lucide-react";
 import { Paperclip, Smile, MapPin, Send } from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
-import messImage from "../../public/images/mess.png";
+import Modal from "../components/Modal1"; // Import Modal component
+import EscalateIssueModal from "../components/EscalateIssueModal"; 
+
+//import { AnimatePresence } from "framer-motion";
 
 
 
-export default function Conversation({ selectedChat }) {
+
+export default function Conversation({ selectedChat, setSelectedChat }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const dropdownRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const currentUser = "User"; // Replace this with actual logged-in user data
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [isEscalateModalOpen, setIsEscalateModalOpen] = useState(false);
+
 
 
   useEffect(() => {
@@ -23,17 +30,24 @@ export default function Conversation({ selectedChat }) {
     }
   }, [selectedChat]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowOptions(false);
-      }
+    if (isModalOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
     }
+  }, [isModalOpen]);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+  useEffect(() => {
+    if (isModalOpen || isEscalateModalOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  }, [isModalOpen, isEscalateModalOpen]);
+  
+
 
   const sendMessage = () => {
     if (newMessage.trim() === "") return;
@@ -69,6 +83,13 @@ export default function Conversation({ selectedChat }) {
     setNewMessage(newMessage + emoji.native);
     setShowEmojiPicker(false);
   };
+  const handleCloseChat = () => {
+    if (setSelectedChat) {
+      setSelectedChat(null);
+    } else {
+      console.warn("setSelectedChat is not defined.");
+    }
+  };
   
 
   return (
@@ -81,24 +102,35 @@ export default function Conversation({ selectedChat }) {
               <img src="/images/pic.png" alt="User" className="w-12 h-12 rounded-full" />
               <h2 className="text-lg font-semibold">{selectedChat.sender}</h2>
             </div>
+          
+          {isModalOpen && (
+              <Modal 
+                closeModal={() => setIsModalOpen(false)} 
+                closeChat={handleCloseChat}
+                openEscalateModal={() => {
+                  setIsModalOpen(false); 
+                  setIsEscalateModalOpen(true);
+                }}
+              />
+            )}
+
+
+            {isEscalateModalOpen && (
+              <EscalateIssueModal closeModal={() => setIsEscalateModalOpen(false)} />
+            )}
+
 
             {/* Three-dot menu */}
-            <div className="relative">
-              <button onClick={() => setShowOptions(!showOptions)} className="p-2">
+            <div className="relative ">
+              <button
+                onClick={() => setIsModalOpen(true)} 
+                className="p-2"
+              >
                 <MoreVertical className="w-5 h-5 text-gray-600" />
               </button>
-
-              {showOptions && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md p-2 text-sm z-10"
-                >
-                  <button className="block w-full text-left px-3 py-2 hover:bg-gray-100">Delete</button>
-                  <button className="block w-full text-left px-3 py-2 hover:bg-gray-100">Close</button>
-                  <button className="block w-full text-left px-3 py-2 hover:bg-gray-100" onClick={() => setShowOptions(false)}>Cancel</button>
-                </div>
-              )}
             </div>
+            
+            
           </div>
 
           {/* Chat Container */}
@@ -146,8 +178,8 @@ export default function Conversation({ selectedChat }) {
       value={newMessage}
       onChange={(e) => setNewMessage(e.target.value)}
       onInput={(e) => {
-        e.target.style.height = "auto"; // Reset height
-        e.target.style.height = `${e.target.scrollHeight}px`; // Adjust height
+        e.target.style.height = "auto"; 
+        e.target.style.height = `${e.target.scrollHeight}px`; 
       }}
       rows={1}
       className="flex-1 bg-transparent px-3 py-2 text-lg focus:outline-none resize-none overflow-hidden"
