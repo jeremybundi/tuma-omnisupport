@@ -11,7 +11,6 @@ import User from './User';
 
 export default function SideNav() {
   const pathname = usePathname(); // Get current route
-  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 
   return (
     <div className="w-full h-screen font-poppins  px-4 pt-8 bg-blue-600 text-white flex flex-col">
@@ -27,7 +26,6 @@ export default function SideNav() {
           {' '}
           {/* Link to the homepage */}
           <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className={`group flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
               ${pathname === '/' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
           >
@@ -54,41 +52,76 @@ export default function SideNav() {
             <span className="text-xl font-medium">All Messages</span>
           </button>
         </Link>
-        {/* Dropdown Links */}
-        {isDropdownOpen && (
-          <div className=" text-black rounded-lg mt-2 py-2 ml-8  w-44">
-            <Link
-              href="/in-app"
-              className="block text-white font-medium hover:text-blue-600 px-4 py-2 rounded-md hover:bg-gray-200"
-            >
-              In-app
-            </Link>
-            <Link
-              href="/email"
-              className="block px-4 py-2 text-white font-medium hover:text-blue-600 rounded-md hover:bg-gray-200"
-            >
-              Email
-            </Link>
-            <Link
-              href="/whatsapp"
-              className="block px-4 py-2 text-white font-medium hover:text-blue-600 rounded-md hover:bg-gray-200"
-            >
-              WhatsApp
-            </Link>
-            <Link
-              href="/app-store"
-              className="block px-4 py-2 text-white font-medium hover:text-blue-600 rounded-md hover:bg-gray-200"
-            >
-              App Store
-            </Link>
-            <Link
-              href="/play-store"
-              className="block px-4 py-2 text-white font-medium hover:text-blue-600 rounded-md hover:bg-gray-200"
-            >
-              Play Store
-            </Link>
-          </div>
-        )}
+        
+        <Link href="/">
+    
+      </Link>
+      
+      <Link href="/in-app">
+        <button
+          className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
+            ${pathname === '/in-app' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
+        >
+          <span className="text-xl font-medium ml-9">In-app</span>
+        </button>
+      </Link>
+      
+      <Link href="/email">
+        <button
+          className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
+            ${pathname === '/email' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
+        >
+          <span className="text-xl ml-9 font-medium">Email</span>
+        </button>
+      </Link>
+      
+      <Link href="/sms">
+        <button
+          className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
+            ${pathname === '/sms' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
+        >
+          <span className="text-xl ml-9 font-medium">WhatsApp</span>
+        </button>
+      </Link>
+      <Link href="/sms">
+        <button
+          className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
+            ${pathname === '/sms' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
+        >
+          <span className="text-xl ml-9 font-medium">App Store</span>
+        </button>
+      </Link>
+      <Link href="/sms">
+        <button
+          className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
+            ${pathname === '/sms' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
+        >
+          <span className="text-xl  ml-9 font-medium">Playstore</span>
+        </button>
+      </Link>
+      <Link href="/">
+  <button className="group flex items-center pl-4 pr-12 py-2 mt-2 rounded-lg border-white text-white transition duration-300 ease-in-out hover:bg-white hover:border-blue-600 hover:text-blue-600">
+    {/* SVG Verification Icon */}
+    <svg
+      width="24"
+      height="20"
+      viewBox="0 0 16 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="mr-3 transition duration-300 ease-in-out fill-white group-hover:fill-blue-600"
+    >
+      <path
+        d="M1.84667 11.8307C1.46278 11.8307 1.1425 11.7024 0.885833 11.4457C0.629167 11.1891 0.500556 10.8685 0.5 10.4841V1.51073C0.5 1.12684 0.628611 0.806562 0.885833 0.549896C1.14306 0.293229 1.46306 0.164618 1.84583 0.164062H14.1542C14.5375 0.164062 14.8575 0.292673 15.1142 0.549896C15.3708 0.807118 15.4994 1.1274 15.5 1.51073V10.4849C15.5 10.8682 15.3714 11.1885 15.1142 11.4457C14.8569 11.703 14.5369 11.8313 14.1542 11.8307H1.84667ZM1.84667 10.9974H14.1542C14.2819 10.9974 14.3994 10.9441 14.5067 10.8374C14.6139 10.7307 14.6672 10.613 14.6667 10.4841V2.66406H1.33333V10.4849C1.33333 10.6127 1.38667 10.7302 1.49333 10.8374C1.6 10.9446 1.7175 10.998 1.84583 10.9974M7.125 9.18073L4.74333 6.79906L5.34333 6.19906L7.125 7.98156L10.6575 4.44906L11.2567 5.04906L7.125 9.18073ZM1.84667 10.9974H1.33333V0.997396H1.84667C1.71833 0.997396 1.60056 1.05073 1.49333 1.1574C1.38611 1.26406 1.33278 1.38184 1.33333 1.51073V10.4849C1.33333 10.6127 1.38667 10.7302 1.49333 10.8374C1.6 10.9446 1.7175 10.998 1.84583 10.9974"
+      />
+    </svg>
+
+    {/* Verification Text */}
+    <span className="text-xl font-medium transition duration-300 ease-in-out">
+      Verification
+    </span>
+  </button>
+</Link>
+
 
         <Link href="/">
           <button className="flex items-center pl-4 pr-12 py-2 mt-2 rounded-lg  border-white text-white transition duration-300   ease-in-out hover:bg-white hover:border-blue-600 hover:text-blue-600">
@@ -116,7 +149,7 @@ export default function SideNav() {
             </svg>
 
             {/* Settings Text */}
-            <span className="text-2xl font-medium transition duration-300 ease-in-out">
+            <span className="text-xl font-medium transition duration-300 ease-in-out">
               Settings
             </span>
           </button>

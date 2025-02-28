@@ -52,14 +52,14 @@ export default function Messages({ onSelectChat }) {
       </div>
 
       {/* Tabs Section */}
-      <div className="flex border-b justify-between mt-8 px-6 mb-4">
+      <div className="flex border-b justify-between  mt-8 px-6 ">
         {['Unread', 'In-Progress', 'Closed'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-3 py-2 text-lg font-medium ${
+            className={`px-4 py-2 text-xl mx-3  font-medium ${
               activeTab === tab
-                ? 'text-blue-600 border-b-2 border-blue-600'
+                ? 'text-blue-600 border-b-4 font-medium  border-blue-600'
                 : 'text-gray-500'
             }`}
           >

@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 import { MoreVertical } from 'lucide-react';
 import { Paperclip, Smile, Pin, Send } from 'lucide-react';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
-import Modal from '../components/Modal1'; // Import Modal component
+import Modal from '../components/Modal1'; 
 import EscalateIssueModal from '../components/EscalateIssueModal';
-
-//import { AnimatePresence } from "framer-motion";
 
 export default function Conversation({ selectedChat, setSelectedChat }) {
   const [messages, setMessages] = useState([]);
@@ -15,15 +14,17 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
   const [showOptions, setShowOptions] = useState(false);
   const dropdownRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const currentUser = 'User'; // Replace this with actual logged-in user data
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const currentUser = 'User'; 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isEscalateModalOpen, setIsEscalateModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedChat) {
+      console.log("Selected Chat:", selectedChat);
       setMessages(selectedChat.messages || []);
     }
   }, [selectedChat]);
+  
 
   useEffect(() => {
     if (isModalOpen) {
@@ -41,34 +42,35 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
     }
   }, [isModalOpen, isEscalateModalOpen]);
 
-  const sendMessage = () => {
+
+  const sendMessage = async () => {
     if (newMessage.trim() === '') return;
-
-    const userMsg = {
-      id: messages.length + 1,
-      sender: 'User',
-      message: newMessage,
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }),
-    };
-
-    const botReply = {
-      id: messages.length + 2,
-      sender: 'TUMA Support',
-      message: "Thank you for reaching out! We'll assist you shortly.",
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }),
-    };
-
-    setMessages([...messages, userMsg, botReply]);
-    setNewMessage('');
+  
+    try {
+      const response = await axios.post('/api/sendMessage', {
+        recipient: selectedChat.phoneNumber, // Ensure `selectedChat` contains recipient's phone number
+        message: newMessage,
+      });
+  
+      if (response.data.success) {
+        const userMsg = {
+          id: messages.length + 1,
+          sender: 'User',
+          message: newMessage,
+          content: { text: newMessage },
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
+        };
+  
+        setMessages([...messages, userMsg]);
+        setNewMessage('');
+      } else {
+        console.error('Failed to send message:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
+  
 
   const addEmoji = (emoji) => {
     setNewMessage(newMessage + emoji.native);
@@ -119,7 +121,7 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
                 closeModal={() => setIsEscalateModalOpen(false)}
                 goBackToModal1={() => {
                   setIsEscalateModalOpen(false);
-                  setIsModalOpen(true); // Reopen Modal 1
+                  setIsModalOpen(true); 
                 }}
               />
             )}
@@ -164,8 +166,15 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
                         : 'bg-blue-600 mb-2 text-white rounded-br-none'
                     }`}
                   >
-                    <p className="break-words">{msg.message}</p>
-                    <span className="text-xs text-gray-500 block mt-1 text-right">
+                     <p className="break-words">
+              {typeof msg.content === 'string' 
+                ? msg.content 
+                : msg.content?.text || 
+                  msg.content?.hsm?.text || 
+                  '[Unsupported Message]'}
+            </p>
+
+              <span className="text-xs text-gray-500 block mt-1 text-right">
                       {msg.timestamp}
                     </span>
                   </div>
