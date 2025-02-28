@@ -1,5 +1,4 @@
 import axios from "axios";
-import { wss } from "./socket"; // Import WebSocket server
 
 export default async function handler(req, res) {
   console.log("🚀 API Handler Started");
@@ -16,65 +15,79 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Missing API Key" });
     }
 
-    // ✅ Fetch all conversations
+    console.log("🔑 API Key Loaded");
+
+    const { sender } = req.query;
+
+    // Fetch all conversations
     const conversationResponse = await axios.get(
       `https://conversations.messagebird.com/v1/conversations`,
-      { headers: { Authorization: `AccessKey ${apiKey}` } }
+      {
+        headers: { Authorization: `AccessKey ${apiKey}` },
+      }
     );
 
     const conversations = conversationResponse.data.items || [];
     console.log(`✅ Found ${conversations.length} Conversations`);
 
     if (conversations.length === 0) {
-      return res.status(200).json({ conversations: [] });
+      return res.status(200).json({ messages: [] });
     }
 
-    // ✅ Fetch messages for each conversation
-    const messageRequests = conversations.map(async (conversation) => {
+    let filteredConversations = conversations;
+
+    // If sender is provided, filter by sender's phone number
+    if (sender) {
+      filteredConversations = conversations.filter(
+        (conv) => conv.contact?.msisdn === sender
+      );
+
+      if (filteredConversations.length === 0) {
+        return res.status(404).json({ error: "No conversation found for this sender" });
+      }
+
+      console.log(`🔍 Found ${filteredConversations.length} Conversations for Sender: ${sender}`);
+    }
+
+    // Fetch messages for each conversation
+    const messageRequests = filteredConversations.map(async (conversation) => {
       try {
         const messagesResponse = await axios.get(
           `https://conversations.messagebird.com/v1/conversations/${conversation.id}/messages`,
-          { headers: { Authorization: `AccessKey ${apiKey}` } }
+          {
+            headers: { Authorization: `AccessKey ${apiKey}` },
+          }
         );
 
         const messages = messagesResponse.data.items || [];
-        console.log(`📩 Found ${messages.length} Messages for Conversation: ${conversation.id}`);
+        console.log(`📩 ${messages.length} Messages for Conversation: ${conversation.id}`);
 
-        // Format messages
         return messages.map((msg) => ({
           conversationId: conversation.id,
           from: {
             name: conversation.contact?.displayName || "Unknown",
-            phoneNumber: msg.from || "Unknown",
+            phoneNumber: conversation.contact?.msisdn || "Unknown",
           },
-          to: { phoneNumber: msg.to || "Unknown" },
+          to: {
+            phoneNumber: msg.to || "Unknown",
+          },
           content: msg.content?.text || "No content",
           timestamp: msg.createdDatetime,
         }));
       } catch (error) {
-        console.error(`❌ Error fetching messages for conversation ${conversation.id}:`, error.message);
+        console.error(`❌ Error fetching messages for ${conversation.id}:`, error.message);
         return [];
       }
     });
 
-    // ✅ Wait for all message fetches to complete
+    // Process all promises and get results
     const messagesResults = await Promise.allSettled(messageRequests);
     const allMessages = messagesResults
       .filter((result) => result.status === "fulfilled")
       .flatMap((result) => result.value);
 
     console.log("📩 Final Messages Sent to Frontend:", allMessages);
-    
-    // ✅ Send new messages to all WebSocket clients
-    if (wss) {
-      wss.clients.forEach((client) => {
-        if (client.readyState === 1) {
-          client.send(JSON.stringify(allMessages));
-        }
-      });
-    }
-
-    return res.status(200).json({ conversations: allMessages });
+    return res.status(200).json({ messages: allMessages });
   } catch (error) {
     console.error("❌ Error fetching conversations:", error.message);
     return res.status(500).json({ error: "Internal Server Error" });
