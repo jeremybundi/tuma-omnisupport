@@ -7,7 +7,7 @@ export default function UnreadMessages({ onSelectChat }) {
   const [displayedConversations, setDisplayedConversations] = useState([]);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [unreadConversations, setUnreadConversations] = useState(new Set());
-  const [visibleCount, setVisibleCount] = useState(12); // Start with 9 conversations
+  const [visibleCount, setVisibleCount] = useState(10); // Start with 9 conversations
 
   useEffect(() => {
     let pollingInterval;
@@ -92,14 +92,14 @@ export default function UnreadMessages({ onSelectChat }) {
 
   // Load More Conversations
   const loadMoreConversations = () => {
-    const newCount = visibleCount + 12; // Load 9 more
+    const newCount = visibleCount + 10; // Load 9 more
     setVisibleCount(newCount);
     setDisplayedConversations(latestMessages.slice(0, newCount));
   };
 
   return (
     <div className="max-w-lg mx-auto font-poppins bg-white flex flex-col">
-      <div className="flex-1 overflow-hidden" style={{ maxHeight: "76vh", overflowY: "auto" }}>
+      <div className="flex-1 overflow-hidden" style={{ maxHeight: "77vh", overflowY: "auto" }}>
         {displayedConversations.length === 0 ? (
           <p className="text-center text-gray-500 mt-4">No messages available</p>
         ) : (
