@@ -57,20 +57,8 @@ export default function User() {
         <div className="ml-1">
           {/* Use Image component for log.png */}
           <div className="inline-block mt-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-white"
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>{' '}
+          <Image src={logImage} alt="Log" width={25} height={20} />
+
           </div>
         </div>
       </div>

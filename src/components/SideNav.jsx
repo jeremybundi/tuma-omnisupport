@@ -16,7 +16,7 @@ export default function SideNav() {
     <div className="w-full h-screen font-poppins  px-4 pt-8 bg-blue-600 text-white flex flex-col">
       <div className="flex justify-start mb-16">
         <Image src={logo} alt="Logo" width={40} height={24} />
-        <div className="font-semibold text-2xl font-lufga mt-2 ml-3">
+        <div className="font-semibold text-xl font-lufga mt-2 ml-3">
           Omnisupport
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function SideNav() {
                 }`}
               />
             </svg>
-            <span className="text-xl font-medium">All Messages</span>
+            <span className="text-lg font-medium">All Messages</span>
           </button>
         </Link>
         
@@ -62,7 +62,7 @@ export default function SideNav() {
           className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
             ${pathname === '/in-app' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
         >
-          <span className="text-xl font-medium ml-9">In-app</span>
+          <span className="text-lg font-medium ml-9">In-app</span>
         </button>
       </Link>
       
@@ -71,7 +71,7 @@ export default function SideNav() {
           className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
             ${pathname === '/email' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
         >
-          <span className="text-xl ml-9 font-medium">Email</span>
+          <span className="text-lg ml-9 font-medium">Email</span>
         </button>
       </Link>
       
@@ -80,7 +80,7 @@ export default function SideNav() {
           className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
             ${pathname === '/sms' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
         >
-          <span className="text-xl ml-9 font-medium">WhatsApp</span>
+          <span className="text-lg ml-9 font-medium">WhatsApp</span>
         </button>
       </Link>
       <Link href="/sms">
@@ -88,7 +88,7 @@ export default function SideNav() {
           className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
             ${pathname === '/sms' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
         >
-          <span className="text-xl ml-9 font-medium">App Store</span>
+          <span className="text-lg ml-9 font-medium">App Store</span>
         </button>
       </Link>
       <Link href="/sms">
@@ -96,7 +96,7 @@ export default function SideNav() {
           className={`flex items-center pl-4 pr-5 py-2 rounded-lg mt-2 transition duration-300 ease-in-out 
             ${pathname === '/sms' ? 'bg-gray-200 text-blue-600' : 'hover:bg-[#F3F5F8] hover:text-blue-600'}`}
         >
-          <span className="text-xl  ml-9 font-medium">Playstore</span>
+          <span className="text-lg  ml-9 font-medium">Playstore</span>
         </button>
       </Link>
       <Link href="/">
@@ -116,7 +116,7 @@ export default function SideNav() {
     </svg>
 
     {/* Verification Text */}
-    <span className="text-xl font-medium transition duration-300 ease-in-out">
+    <span className="text-lg font-medium transition duration-300 ease-in-out">
       Verification
     </span>
   </button>
@@ -149,7 +149,7 @@ export default function SideNav() {
             </svg>
 
             {/* Settings Text */}
-            <span className="text-xl font-medium transition duration-300 ease-in-out">
+            <span className="text-lg font-medium transition duration-300 ease-in-out">
               Settings
             </span>
           </button>

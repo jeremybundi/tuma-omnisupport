@@ -134,7 +134,7 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
                 alt="User"
                 className="w-12 h-12 rounded-full"
               />
-            <h2 className="text-lg font-semibold">
+            <h2 className="text-sm font-semibold">
               {selectedChat?.messages?.[0]?.to?.phoneNumber || 'Unknown'}
             </h2>
             </div>
@@ -178,42 +178,58 @@ export default function Conversation({ selectedChat, setSelectedChat }) {
           </div>
 
           <div className="flex flex-col flex-1 border h-4/5 rounded-2xl overflow-y-auto bg-white  p-4 space-y-3">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex items-center  ${msg.from.phoneNumber === currentUserPhone ? 'justify-end' : 'justify-start'}`}
-              >
-                {msg.from.phoneNumber === currentUserPhone && (
-                  <Image src="/images/mess.png" alt="M" width={40} height={40} className="rounded-full mr-3" />
-                )}
+          {messages.map((msg, index) => (
+  <div key={index} className={`flex flex-col ${msg.from.phoneNumber === currentUserPhone ? 'items-end' : 'items-start'}`}>
+    {/* Message container */}
+    <div className="flex items-center">
+      {msg.from.phoneNumber === currentUserPhone && (
+        <Image src="/images/mess.png" alt="M" width={40} height={40} className="rounded-full mr-3" />
+      )}
 
-                <div
-                  className={`max-w-lg p-3 rounded-2xl text-[16px] shadow-md ${
-                    msg.from.phoneNumber === currentUserPhone
-                      ? 'bg-blue-600 text-white rounded-br-none'
-                      : 'bg-gray-200 text-gray-800 rounded-bl-none'
-                  }`}
-                >
-                  <p className="break-words">{msg.content}</p>
-                  <span className="text-xs text-gray-500 block mt-1 text-right">
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-                  </span>
-                </div>
+      <div
+        className={`max-w-lg p-3 rounded-2xl text-[16px] shadow-md ${
+          msg.from.phoneNumber === currentUserPhone
+            ? 'bg-blue-600 text-white text-sm rounded-br-none'
+            : 'bg-gray-200 text-gray-800 text-sm rounded-bl-none'
+        }`}
+      >
+        <p className="break-words">{msg.content}</p>
+        <span className="text-xs text-gray-600 block mt-1 text-right">
+          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+        </span>
+      </div>
 
-                {msg.from.phoneNumber !== currentUserPhone && (
-                  <Image src="/images/mess.png" alt="M" width={40} height={40} className="rounded-full ml-4" />
-                )}
-              </div>
-            ))}
+      {msg.from.phoneNumber !== currentUserPhone && (
+        <Image src="/images/mess.png" alt="M" width={40} height={40} className="rounded-full ml-4" />
+      )}
+    </div>
+
+    {/* Buttons BELOW the message, full width of message */}
+    {msg.buttons && msg.buttons.length > 0 && (
+      <div className="flex flex-col w-full max-w-lg mt-2 space-y-2">
+        {msg.buttons.map((button, btnIndex) => (
+          <button
+            key={btnIndex}
+            className="px-4 py-2 bg-blue-600 text-white  text-sm rounded-lg shadow hover:bg-blue-700"
+          >
+            {button.title}
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+))}
+
 
       
 
-            {showEmojiPicker && (
+          
+            </div>
+              {showEmojiPicker && (
               <div className="absolute bottom-16 right-10 z-10">
                 <Picker data={data} onEmojiSelect={addEmoji} />
               </div>
             )}
-            </div>
 
             {/* Message Input - Fixed at the bottom */}
             <div className=" bg-white p-4 border-t flex items-center">

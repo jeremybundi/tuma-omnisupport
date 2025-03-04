@@ -41,16 +41,33 @@ export default async function handler(req, res) {
         console.log(`📩 Found ${messages.length} Messages for Conversation: ${conversation.id}`);
 
         // Format messages
-        return messages.map((msg) => ({
-          conversationId: conversation.id,
-          from: {
-            name: conversation.contact?.displayName || "Unknown",
-            phoneNumber: msg.from || "Unknown",
-          },
-          to: { phoneNumber: msg.to || "Unknown" },
-          content: msg.content?.text || "No content",
-          timestamp: msg.createdDatetime,
-        }));
+        return messages.map((msg) => {
+          const isInteractive = msg.content?.interactive;
+          const contentText = isInteractive
+            ? msg.content?.interactive?.body?.text || "No content"
+            : msg.content?.text || "No content";
+
+          return {
+            id: msg.id, // Add message ID here
+            conversationId: conversation.id,
+            from: {
+              name: conversation.contact?.displayName || "Unknown",
+              phoneNumber: msg.from || "Unknown",
+            },
+            to: { phoneNumber: msg.to || "Unknown" },
+            content: contentText,
+            buttons: isInteractive
+              ? msg.content?.interactive?.action?.buttons?.map((btn) => ({
+                  id: btn.id,
+                  title: btn.title,
+                })) || []
+              : [],
+            timestamp: msg.createdDatetime,
+          };
+        });
+
+        
+            
       } catch (error) {
         console.error(`❌ Error fetching messages for conversation ${conversation.id}:`, error.message);
         return [];
