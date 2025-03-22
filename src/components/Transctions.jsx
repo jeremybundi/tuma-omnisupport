@@ -85,7 +85,7 @@ const TransactionTable = () => {
     <div className="p-6 bg-white w-full font-poppins rounded-lg shadow-md">
       {/* Search Input and Date Pickers */}
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-xl font-semibold">All Transactions</h1>
+        <h1 className="text-lg font-semibold">All Transactions</h1>
         <div className="flex items-center gap-4">
           <input
             type="text"
@@ -97,7 +97,7 @@ const TransactionTable = () => {
             }}
             className="w-96 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <h1 className="text-gray-400 text-[17px] font-[600] ml-16">Filter By Date</h1>
+          <h1 className="text-gray-400 text-[14px] font-[500] ml-9">Filter By Date</h1>
           <div className="flex items-center gap-2">
             <DatePicker
               selected={startDate}
@@ -130,7 +130,7 @@ const TransactionTable = () => {
 
       {/* Transactions Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full text-sm text-left">
+        <table className="min-w-full text-[11px] text-left">
           <thead>
             <tr className="bg-gray-100 text-gray-500">
               <th className="p-3 font-semibold">Name</th>
@@ -148,7 +148,7 @@ const TransactionTable = () => {
             {paginatedTransactions.map((transaction, index) => (
               <tr
                 key={index}
-                className="border-b hover:bg-gray-50 transition-colors"
+                className="border-b hover:bg-gray-50 text-sm transition-colors"
               >
                 <td className="p-3 text-gray-500">{transaction.name}</td>
                 <td className="p-3">
