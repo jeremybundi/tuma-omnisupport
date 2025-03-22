@@ -130,7 +130,7 @@ const TransactionTable = () => {
 
       {/* Transactions Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full text-[11px] text-left">
+        <table className="min-w-full text-[10px] text-left">
           <thead>
             <tr className="bg-gray-100 text-gray-500">
               <th className="p-3 font-semibold">Name</th>
@@ -148,7 +148,7 @@ const TransactionTable = () => {
             {paginatedTransactions.map((transaction, index) => (
               <tr
                 key={index}
-                className="border-b hover:bg-gray-50 text-[10px] transition-colors"
+                className="border-b hover:bg-gray-50 text-[11px] transition-colors"
               >
                 <td className="p-3 text-gray-500">{transaction.name}</td>
                 <td className="p-3">
