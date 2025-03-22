@@ -203,7 +203,7 @@ const TransactionTable = () => {
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-lg text-[11px]${
+          className={`px-4 py-2 rounded-lg text-[11px] ${
             currentPage === totalPages
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
