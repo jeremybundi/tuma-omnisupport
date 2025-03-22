@@ -148,7 +148,7 @@ const TransactionTable = () => {
             {paginatedTransactions.map((transaction, index) => (
               <tr
                 key={index}
-                className="border-b hover:bg-gray-50 text-sm transition-colors"
+                className="border-b hover:bg-gray-50 text-[10px] transition-colors"
               >
                 <td className="p-3 text-gray-500">{transaction.name}</td>
                 <td className="p-3">

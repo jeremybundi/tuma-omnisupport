@@ -14,7 +14,7 @@ export default function Page() {
 
   return (
     <div className="flex w-full">
-      <div className="w-[20%]">
+      <div className="w-[450px]">
         <SideNav />
       </div>
       <div className="w-[30%] border-r border-r-[#E9EBEE] h-screen flex flex-col">
