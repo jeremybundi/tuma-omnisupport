@@ -6,7 +6,7 @@ import SideNav from "../../components/SideNav";
 export default function TransactionsPage() {
     return (
       <div className="flex">
-        <span className="w-[450px]">
+        <span className="w-[400px]">
         <SideNav />
 
         </span>
