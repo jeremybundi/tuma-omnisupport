@@ -95,7 +95,7 @@ const TransactionTable = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1); // Reset to first page when searching
             }}
-            className="w-96 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-72 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <h1 className="text-gray-400 text-[14px] font-[500] ml-9">Filter By Date</h1>
           <div className="flex items-center gap-2">
