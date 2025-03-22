@@ -99,6 +99,17 @@ export default function SideNav() {
           <span className="text-lg  ml-9 font-medium">Playstore</span>
         </button>
       </Link>
+      <Link href="/Transactions">
+          <button className="flex ml-9 items-center pl-4 pr-12 py-2 mt-2 rounded-lg  border-white text-white transition duration-300   ease-in-out hover:bg-white hover:border-blue-600 hover:text-blue-600">
+            
+
+            {/* Settings Text */}
+            <span className="text-lg font-medium transition duration-300 ease-in-out">
+              Kplc Transactions
+            </span>
+          </button>
+        </Link>
+
       <Link href="/">
   <button className="group flex items-center pl-4 pr-12 py-2 mt-2 rounded-lg border-white text-white transition duration-300 ease-in-out hover:bg-white hover:border-blue-600 hover:text-blue-600">
     {/* SVG Verification Icon */}
@@ -121,6 +132,7 @@ export default function SideNav() {
     </span>
   </button>
 </Link>
+
 
 
         <Link href="/">

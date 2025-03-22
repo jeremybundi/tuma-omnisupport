@@ -65,7 +65,9 @@ export default function Messages({ onSelectChat }) {
             sortOrder={sortOrder}
           />
         )}
-        {activeTab === 'In-Progress' && <InProgressMessages />}
+        {activeTab === 'In-Progress' && (
+          <InProgressMessages onSelectChat={onSelectChat} />
+        )}
         {activeTab === 'Closed' && <ClosedMessages />}
       </div>
     </div>
