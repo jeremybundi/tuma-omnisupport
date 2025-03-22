@@ -85,7 +85,7 @@ const TransactionTable = () => {
     <div className="p-6 bg-white w-full font-poppins rounded-lg shadow-md">
       {/* Search Input and Date Pickers */}
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-lg font-semibold">All Transactions</h1>
+        <h1 className="text-lg font-semibold">All Kplc Transactions</h1>
         <div className="flex items-center gap-4">
           <input
             type="text"
