@@ -163,14 +163,14 @@ const TransactionTable = () => {
                 </td>
                 <td className="p-3">{transaction.amountGBP}</td>
                 <td className="p-3">{transaction.exchangeRate}</td>
-                <td className="p-3">{transaction.date}</td>
+                <td className="p-3 text-gray-500">{transaction.date}</td>
                 <td className="p-3 text-gray-500">{transaction.channel}</td>
                 <td className="p-2">
                 <span
                     className={`p-1 rounded-lg w-fit inline-block ${
                     transaction.status === "Tokens Dispatched"
-                        ? "text-green-600 bg-green-200"
-                        : "text-red-600 bg-red-200"
+                        ? "text-green-600 bg-green-100"
+                        : "text-red-600 bg-red-100"
                     }`}
                 >
                     {transaction.status}
@@ -189,7 +189,7 @@ const TransactionTable = () => {
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-lg text-[11px] ${
             currentPage === 1
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
@@ -197,13 +197,13 @@ const TransactionTable = () => {
         >
           Prev
         </button>
-        <span className="px-4 py-2 bg-gray-100 rounded-lg">
+        <span className="px-4 py-2 text-[11px] bg-gray-100 rounded-lg">
           Page {currentPage} of {totalPages}
         </span>
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-lg text-[11px]${
             currentPage === totalPages
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
