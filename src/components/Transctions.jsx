@@ -145,7 +145,6 @@ useEffect(() => {
             <tr className="bg-gray-100 text-gray-500 whitespace-nowrap">
               <th className="p-3 font-semibold">Transaction ID</th>
               <th className="p-3 font-semibold">Transaction Key</th>
-              <th className="p-3 font-semibold">Reference</th>
               <th className="p-3 font-semibold">Sender Name</th>
               <th className="p-3 font-semibold">Type</th>
               <th className="p-3 font-semibold">Account No</th>
@@ -167,7 +166,6 @@ useEffect(() => {
               >
                 <td className="p-3">{transaction.transactionId}</td>
                 <td className="p-3">{transaction.transactionKey}</td>
-                <td className="p-3">{transaction.transactionReference}</td>
                 <td className="p-3">{transaction.senderName}</td>
                 <td className="p-3">{transaction.transactionType}</td>
                 <td className="p-3">{transaction.accountNumber}</td>
