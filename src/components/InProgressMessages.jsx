@@ -56,10 +56,10 @@ export default function InProgressMessages({ onSelectChat, activeChat }) {
     };
 
     fetchInProgressConversations();
-    const interval = setInterval(fetchInProgressConversations, 5000); // Poll every 5 seconds
+//    const interval = setInterval(fetchInProgressConversations, 5000); 
 
-    return () => clearInterval(interval);
-  }, []);
+   // return () => clearInterval(interval);
+  }, );
 
   const loadMoreConversations = () => {
     setVisibleCount((prevCount) => prevCount + 10);

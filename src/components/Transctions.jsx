@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"; // Default CSS for the date picker
+import "react-datepicker/dist/react-datepicker.css";
+import Success from "./Success";
+import Error from "./Error";
+import { useRef } from "react";
+
 
 const CopyButton = ({ text }) => {
   const copyToClipboard = () => {
@@ -19,95 +24,100 @@ const CopyButton = ({ text }) => {
   );
 };
 
-// Generate 30 transactions
-const generateTransactions = (count) => {
-  return Array.from({ length: count }, (_, index) => ({
-    name: `Customer ${index + 1}`,
-    phone: `+2547${Math.floor(10000000 + Math.random() * 90000000)}`,
-    kplcAccount: String(Math.floor(1000000000 + Math.random() * 9000000000)),
-    amountKES: String(Math.floor(1000 + Math.random() * 9000)),
-    amountGBP: (Math.random() * 500).toFixed(2),
-    exchangeRate: "150",
-    date: new Date(
-      2024,
-      Math.floor(Math.random() * 12),
-      Math.floor(Math.random() * 28) + 1,
-      Math.floor(Math.random() * 24),
-      Math.floor(Math.random() * 60)
-    ).toLocaleString(),
-    channel: ["Card", "MPESA", "Paybill"][Math.floor(Math.random() * 3)],
-    status: Math.random() > 0.5 ? "Tokens Dispatched" : "Tokens Not Dispatched",
-  }));
-};
-
 const TransactionTable = () => {
-  const [transactions] = useState(generateTransactions(30));
+  const [transactions, setTransactions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [startDate, setStartDate] = useState(null); // For single date filter
-  const [endDate, setEndDate] = useState(null); // For date range filter
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   const recordsPerPage = 12;
 
-  // Filter transactions by customer name and date/range
+  const fetchTransactions = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.tuma-app.com/api/transfer/kplc-transactions?page=${currentPage}&size=${recordsPerPage}`
+      );
+      setTransactions(response.data || []);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [currentPage]);
+
   const filteredTransactions = transactions.filter((transaction) => {
-    const transactionDate = new Date(transaction.date).setHours(0, 0, 0, 0); // Normalize transaction date
-    const matchesSearchTerm = transaction.name
-      .toLowerCase()
+    const transactionDate = new Date(transaction.date).setHours(0, 0, 0, 0);
+    const matchesSearchTerm = transaction.senderName
+      ?.toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    // Filter by date range
     if (startDate && endDate) {
       const start = new Date(startDate).setHours(0, 0, 0, 0);
       const end = new Date(endDate).setHours(23, 59, 59, 999);
       return (
-        matchesSearchTerm && transactionDate >= start && transactionDate <= end
+        matchesSearchTerm &&
+        transactionDate >= start &&
+        transactionDate <= end
       );
     }
 
-    // Filter by single date
     if (startDate && !endDate) {
       const start = new Date(startDate).setHours(0, 0, 0, 0);
       return matchesSearchTerm && transactionDate === start;
     }
 
-    // If no date filter is applied
     return matchesSearchTerm;
   });
+  // Inside TransactionTable component
+const modalRef = useRef(null);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredTransactions.length / recordsPerPage);
-  const paginatedTransactions = filteredTransactions.slice(
-    (currentPage - 1) * recordsPerPage,
-    currentPage * recordsPerPage
-  );
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      setSelectedTransaction(null);
+    }
+  };
+
+  if (selectedTransaction) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [selectedTransaction]);
 
   return (
-    <div className="p-6 bg-white w-full font-poppins rounded-lg shadow-md">
-      {/* Search Input and Date Pickers */}
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-lg font-semibold">All Kplc Transactions</h1>
+    <div className="pt-3 pl-6 bg-white w-full font-poppins max-h-screen rounded-lg shadow-md overflow-x-auto relative">
+      <div className="mb-6 flex items-center justify-between mr-6 gap-4">
+        <h1 className="text-lg font-semibold">All KPLC Transactions</h1>
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Search by customer name..."
+            placeholder="Search by sender name..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1); // Reset to first page when searching
+              setCurrentPage(1);
             }}
-            className="w-72 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-72 px-2 p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <h1 className="text-gray-400 text-[14px] font-[500] ml-9">Filter By Date</h1>
+          <h1 className="text-gray-400 text-[14px] font-[500] ml-5">
+            Filter By Date
+          </h1>
           <div className="flex items-center gap-2">
             <DatePicker
               selected={startDate}
               onChange={(date) => {
                 setStartDate(date);
-                setEndDate(null); // Reset end date when selecting a new start date
-                setCurrentPage(1); // Reset to first page when filtering
+                setEndDate(null);
+                setCurrentPage(1);
               }}
               placeholderText="Start Date"
-              className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-2 p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               dateFormat="dd/MM/yyyy"
               isClearable
             />
@@ -116,76 +126,78 @@ const TransactionTable = () => {
               selected={endDate}
               onChange={(date) => {
                 setEndDate(date);
-                setCurrentPage(1); // Reset to first page when filtering
+                setCurrentPage(1);
               }}
               placeholderText="End Date"
-              className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-2 p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               dateFormat="dd/MM/yyyy"
               isClearable
-              minDate={startDate} // Ensure end date is not before start date
+              minDate={startDate}
             />
           </div>
         </div>
       </div>
 
-      {/* Transactions Table */}
+      {/* Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full text-[10px] text-left">
+        <table className="min-w-full text-[12px] font-poppins text-left">
           <thead>
-            <tr className="bg-gray-100 text-gray-500">
-              <th className="p-3 font-semibold">Name</th>
-              <th className="p-3 font-semibold">Phone</th>
-              <th className="p-3 font-semibold">KPLC Account No</th>
-              <th className="p-3 font-semibold">Amount (KES)</th>
-              <th className="p-3 font-semibold">Amount (GBP)</th>
+            <tr className="bg-gray-100 text-gray-500 whitespace-nowrap">
+              <th className="p-3 font-semibold">Transaction ID</th>
+              <th className="p-3 font-semibold">Transaction Key</th>
+              <th className="p-3 font-semibold">Reference</th>
+              <th className="p-3 font-semibold">Sender Name</th>
+              <th className="p-3 font-semibold">Type</th>
+              <th className="p-3 font-semibold">Account No</th>
+              <th className="p-3 font-semibold">Sender Phone</th>
+              <th className="p-3 font-semibold">Receiver</th>
+              <th className="p-3 font-semibold">Sender Amount (GBP)</th>
+              <th className="p-3 font-semibold">Recipient Amount (KES)</th>
               <th className="p-3 font-semibold">Exchange Rate</th>
               <th className="p-3 font-semibold">Date</th>
-              <th className="p-3 font-semibold">Channel</th>
               <th className="p-3 font-semibold">Status</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedTransactions.map((transaction, index) => (
+            {filteredTransactions.map((transaction, index) => (
               <tr
-                key={index}
-                className="border-b hover:bg-gray-50 text-[11px] transition-colors"
+                key={transaction.transactionId || index}
+                className="border-b hover:bg-gray-100 text-[13px] transition-colors whitespace-nowrap cursor-pointer"
+                onClick={() => setSelectedTransaction(transaction)}
               >
-                <td className="p-3 text-gray-500">{transaction.name}</td>
+                <td className="p-3">{transaction.transactionId}</td>
+                <td className="p-3">{transaction.transactionKey}</td>
+                <td className="p-3">{transaction.transactionReference}</td>
+                <td className="p-3">{transaction.senderName}</td>
+                <td className="p-3">{transaction.transactionType}</td>
+                <td className="p-3">{transaction.accountNumber}</td>
+                <td className="p-3">{transaction.senderPhone}</td>
+                <td className="p-3">{transaction.receiverName}</td>
+                <td className="p-3 text-center">{transaction.senderAmount}</td>
+                <td className="p-3 text-center">{transaction.recipientAmount}</td>
+                <td className="p-3 text-center">{transaction.exchangeRate}</td>
                 <td className="p-3">
-                  {transaction.phone} <CopyButton text={transaction.phone} />
+                  {new Date(transaction.date).toLocaleString()}
                 </td>
                 <td className="p-3">
-                  {transaction.kplcAccount}{" "}
-                  <CopyButton text={transaction.kplcAccount} />
-                </td>
-                <td className="p-3">
-                  {transaction.amountKES} <CopyButton text={transaction.amountKES} />
-                </td>
-                <td className="p-3">{transaction.amountGBP}</td>
-                <td className="p-3">{transaction.exchangeRate}</td>
-                <td className="p-3 text-gray-500">{transaction.date}</td>
-                <td className="p-3 text-gray-500">{transaction.channel}</td>
-                <td className="p-2">
-                <span
-                    className={`p-1 rounded-lg w-fit inline-block ${
-                    transaction.status === "Tokens Dispatched"
+                  <span
+                    className={`p-1 px-2 rounded-xl w-fit inline-block ${
+                      transaction.status === "SUCCESS"
                         ? "text-green-600 bg-green-100"
                         : "text-red-600 bg-red-100"
                     }`}
-                >
+                  >
                     {transaction.status}
-                </span>
+                  </span>
                 </td>
-
-
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-center mt-6 space-x-2">
+      {/* Pagination */}
+      <div className="flex justify-center mt-4 space-x-2">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -198,22 +210,47 @@ const TransactionTable = () => {
           Prev
         </button>
         <span className="px-4 py-2 text-[11px] bg-gray-100 rounded-lg">
-          Page {currentPage} of {totalPages}
+          Page {currentPage}
         </span>
         <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-lg text-[11px] ${
-            currentPage === totalPages
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+          className="px-4 py-2 rounded-lg text-[11px] bg-blue-500 text-white hover:bg-blue-600"
         >
           Next
         </button>
       </div>
+
+ {/* Right Slide Modal */}
+{selectedTransaction && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex">
+    <div
+      ref={modalRef}
+      className="ml-auto bg-white w-full max-w-[500px] h-screen p-6 shadow-lg overflow-y-auto transition-transform duration-300 ease-in-out"
+    >
+      <div className="flex justify-end items-center ">
+  <button
+    onClick={() => setSelectedTransaction(null)}
+    className="text-gray-600 hover:text-black text-3xl font-medium"
+  >
+    ×
+  </button>
+</div>
+
+      {selectedTransaction.status === "SUCCESS" ? (
+        <Success transaction={selectedTransaction} />
+      ) : (
+        <Error transaction={selectedTransaction} />
+      )}
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };
 
 export default TransactionTable;
+
+
+
