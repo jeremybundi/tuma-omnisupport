@@ -3,7 +3,7 @@ import axios from "axios";
 
 export default function InProgressMessages({ onSelectChat, activeChat }) {
   const [inProgressConversations, setInProgressConversations] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(10);
+  const [visibleCount, setVisibleCount] = useState(100);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const firstLoad = useRef(true);
@@ -25,16 +25,13 @@ export default function InProgressMessages({ onSelectChat, activeChat }) {
         // Update conversations with new message flags
         const updatedConversations = inProgress.map((conv) => {
           if (conv.messages.length > 0) {
-            // Sort messages to get the newest one
             const sortedMessages = [...conv.messages].sort(
               (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
             );
-            const newestMessage = sortedMessages[0]; // Newest message is first
+            const newestMessage = sortedMessages[0]; 
 
-            // Get the stored message ID from localStorage
             const storedMessageId = localStorage.getItem(`lastMessage_${conv.id}`);
 
-            // Check if the newest message ID is different from the stored one
             const hasNewMessage = newestMessage.id !== storedMessageId;
 
             return {
@@ -62,7 +59,7 @@ export default function InProgressMessages({ onSelectChat, activeChat }) {
   }, );
 
   const loadMoreConversations = () => {
-    setVisibleCount((prevCount) => prevCount + 10);
+    setVisibleCount((prevCount) => prevCount + 100);
   };
 
   const handleSelectChat = (conversation) => {
@@ -81,7 +78,7 @@ export default function InProgressMessages({ onSelectChat, activeChat }) {
 
   return (
     <div className="max-w-lg mx-auto font-poppins bg-white flex flex-col">
-      <div className="flex-1 overflow-hidden" style={{ maxHeight: "77vh", overflowY: "auto" }}>
+      <div className="flex-1 overflow-hidden" style={{ maxHeight: "78vh", overflowY: "auto" }}>
         {loading ? (
           <p className="text-gray-500 text-center mt-4">Loading in-progress messages...</p>
         ) : error ? (
@@ -103,22 +100,24 @@ export default function InProgressMessages({ onSelectChat, activeChat }) {
                 key={conv.id}
                 className={`cursor-pointer px-4 py-2 border-b flex justify-between items-center transition ${
                   activeChat?.id === conv.id
-                    ? "bg-gray-100" // Highlight active chat
+                    ? "bg-gray-100" 
                     : conv.hasNewMessage
-                    ? "bg-gray-200" // Highlight new messages
+                    ? "bg-gray-200"
                     : "bg-white"
                 }`}
                 onClick={() => handleSelectChat(conv)}
               >
                 <div className="flex items-start w-full">
-                  <img src="/images/pic.png" alt="Message Icon" className="w-12 h-12 mr-2" />
+                <div className="p-2 px-4 mr-2 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+              {(lastMessage.from.name || lastMessage.from.phoneNumber || "?")[0].toUpperCase()}
+              </div>
                   <div className="flex justify-between items-start w-full">
                     <div>
                       <p className="font-medium text-gray-900 mb-1 text-sm">
                         {lastMessage.from.name || lastMessage.from.phoneNumber}
                       </p>
-                      <p className="text-gray-500 text-xs truncate">{lastMessage.content}</p>
-                    </div>
+                      <p className="text-gray-500 text-xs  truncate max-w-[270px]">{lastMessage.content}</p>
+                      </div>
                     <div className="ml-auto flex items-center">
                       <p className="text-sm text-gray-400">
                         {new Date(lastMessage.timestamp).toLocaleTimeString([], {
@@ -128,10 +127,10 @@ export default function InProgressMessages({ onSelectChat, activeChat }) {
                         })}
                       </p>
 
-                      {/* Show dot for new messages */}
+                      {/* Show dot for new messages 
                       {conv.hasNewMessage && (
                         <span className="ml-2 bg-red-500 w-3 h-3 rounded-full"></span>
-                      )}
+                      )}*/}
                     </div>
                   </div>
                 </div>

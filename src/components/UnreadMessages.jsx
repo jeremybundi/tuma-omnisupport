@@ -4,7 +4,7 @@ import PropTypes from "prop-types"; // For prop validation
 
 export default function UnreadMessages({ onSelectChat, filter, sortOrder }) {
   const [unreadConversations, setUnreadConversations] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(10); // Start with 10 conversations
+  const [visibleCount, setVisibleCount] = useState(100); // Start with 10 conversations
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
 
@@ -48,12 +48,11 @@ export default function UnreadMessages({ onSelectChat, filter, sortOrder }) {
     };
 
     fetchUnreadConversations();
-    const interval = setInterval(fetchUnreadConversations, 10000); // Poll every 10 seconds
-    return () => clearInterval(interval);
+   
   }, [filter, sortOrder, visibleCount]);
 
   const loadMoreConversations = () => {
-    setVisibleCount((prev) => prev + 10); // Load 10 more conversations
+    setVisibleCount((prev) => prev + 100); // Load 10 more conversations
   };
 
   if (loading) {

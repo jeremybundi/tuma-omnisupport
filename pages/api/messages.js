@@ -2,12 +2,10 @@ import axios from "axios";
 import { wss } from "./socket"; // Import WebSocket server
 
 export default async function handler(req, res) {
-  console.log("🚀 API Handler Started");
 
   const apiKey = process.env.MESSAGEBIRD_API_KEY;
 
   if (!apiKey) {
-    console.error("❌ Missing API Key");
     return res.status(500).json({ error: "Missing API Key" });
   }
 
@@ -18,7 +16,6 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: "Method Not Allowed" });
     }
   } catch (error) {
-    console.error("❌ API Error:", error.message);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -27,7 +24,6 @@ export default async function handler(req, res) {
  * Fetch all conversations and messages
  */
 async function handleGetConversations(req, res, apiKey) {
-  console.log("📡 Fetching Conversations...");
 
   try {
     const conversationResponse = await axios.get(
@@ -36,7 +32,6 @@ async function handleGetConversations(req, res, apiKey) {
     );
 
     const conversations = conversationResponse.data.items || [];
-    console.log(`✅ Found ${conversations.length} Conversations`);
 
     if (conversations.length === 0) {
       return res.status(200).json({ conversations: [] });
@@ -51,7 +46,6 @@ async function handleGetConversations(req, res, apiKey) {
 
     return res.status(200).json({ conversations: conversationsWithMessages });
   } catch (error) {
-    console.error("❌ Error Fetching Conversations:", error.message);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -67,12 +61,11 @@ async function fetchMessagesForConversation(conversation, apiKey) {
     );
 
     const messages = messagesResponse.data.items || [];
-    console.log(`📩 Found ${messages.length} Messages for ${conversation.id}`);
 
     // Determine conversation status
     const userReplied = messages.some((msg) => msg.from === "+447778024995"); // Replace with your phone number
 
-    const status = userReplied ? "in-progress" : "unread";
+    const status = userReplied ? "in-progress" : "unrea";
 
     // Format messages
     const formattedMessages = messages.map((msg) => {
@@ -124,7 +117,6 @@ async function fetchMessagesForConversation(conversation, apiKey) {
       status,
     };
   } catch (error) {
-    console.error(`❌ Error Fetching Messages for ${conversation.id}:`, error.message);
     return { ...conversation, messages: [], status: "error" };
   }
 };
