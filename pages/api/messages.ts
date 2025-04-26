@@ -1,30 +1,25 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from "axios";
-import { wss } from "./socket"; // Import WebSocket server
 
-export default async function handler(req, res) {
-
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const apiKey = process.env.MESSAGEBIRD_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: "Missing API Key" });
+    return res.status(500).json({ error: "Error: Missing API Key" });
   }
 
   try {
     if (req.method === "GET") {
       return await handleGetConversations(req, res, apiKey);
     } else {
-      return res.status(405).json({ error: "Method Not Allowed" });
+      return res.status(405).json({ error: "Error: Method Not Allowed" });
     }
   } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Error: Internal Server Error" });
   }
 }
 
-/**
- * Fetch all conversations and messages
- */
-async function handleGetConversations(req, res, apiKey) {
-
+async function handleGetConversations(req: NextApiRequest, res: NextApiResponse, apiKey: string) {
   try {
     const conversationResponse = await axios.get(
       `https://conversations.messagebird.com/v1/conversations`,
@@ -38,22 +33,17 @@ async function handleGetConversations(req, res, apiKey) {
     }
 
     const conversationsWithMessages = await Promise.all(
-      conversations.map((conversation) => fetchMessagesForConversation(conversation, apiKey))
+      conversations.map((conversation: any) => fetchMessagesForConversation(conversation, apiKey))
     );
 
-    // Broadcast the conversations to WebSocket clients
-    broadcastToClients({ type: "conversations", data: conversationsWithMessages });
 
     return res.status(200).json({ conversations: conversationsWithMessages });
   } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Error: Internal Server Error" });
   }
 }
 
-/**
- * Fetch messages for a specific conversation
- */
-async function fetchMessagesForConversation(conversation, apiKey) {
+async function fetchMessagesForConversation(conversation: any, apiKey: string) {
   try {
     const messagesResponse = await axios.get(
       `https://conversations.messagebird.com/v1/conversations/${conversation.id}/messages`,
@@ -62,31 +52,24 @@ async function fetchMessagesForConversation(conversation, apiKey) {
 
     const messages = messagesResponse.data.items || [];
 
-    // Determine conversation status
-    const userReplied = messages.some((msg) => msg.from === "+447778024995"); // Replace with your phone number
+    const userReplied = messages.some((msg: any) => msg.from === "+447778024995");
 
-    const status = userReplied ? "in-progress" : "unrea";
+    const status = userReplied ? "in-progress" : "unread";
 
-    // Format messages
-    const formattedMessages = messages.map((msg) => {
+    const formattedMessages = messages.map((msg: any) => {
       const isInteractive = msg.content?.interactive;
       const isButtonReply = isInteractive && msg.content.interactive.type === "button_reply";
 
-      // Extract the content text based on the message type
       let contentText;
       if (isButtonReply) {
-        // If it's a button reply, use the button text as the content
         contentText = msg.content.interactive.reply.text;
       } else if (isInteractive) {
-        // If it's an interactive message (but not a button reply), use the body text
         contentText = msg.content.interactive.body?.text || "No content";
       } else {
-        // For non-interactive messages, use the text content
         contentText = msg.content?.text || "No content";
       }
 
-      // Check if the message is a button selection
-      const selectedButton = msg.buttons?.find((btn) => btn.selected);
+      const selectedButton = msg.buttons?.find((btn: any) => btn.selected);
       const responseText = selectedButton
         ? `Customer selected "${selectedButton.title}"`
         : contentText;
@@ -99,12 +82,12 @@ async function fetchMessagesForConversation(conversation, apiKey) {
           phoneNumber: msg.from || "Unknown",
         },
         to: { phoneNumber: msg.to || "Unknown" },
-        content: responseText, // Use the dynamic response text
+        content: responseText,
         buttons: isInteractive
-          ? msg.content?.interactive?.action?.buttons?.map((btn) => ({
+          ? msg.content?.interactive?.action?.buttons?.map((btn: any) => ({
               id: btn.id,
               title: btn.title,
-              selected: btn.selected || false, // Track if the button was selected
+              selected: btn.selected || false,
             })) || []
           : [],
         timestamp: msg.createdDatetime,
@@ -119,17 +102,6 @@ async function fetchMessagesForConversation(conversation, apiKey) {
   } catch (error) {
     return { ...conversation, messages: [], status: "error" };
   }
-};
-
-/**
- * Broadcast messages to WebSocket clients
- */
-function broadcastToClients(data) {
-  if (wss) {
-    wss.clients.forEach((client) => {
-      if (client.readyState === 1) {
-        client.send(JSON.stringify(data));
-      }
-    });
-  }
 }
+
+

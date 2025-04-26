@@ -1,10 +1,11 @@
-import axios from "axios";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import axios from 'axios';
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log("🚀 API Handler Started");
 
   if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(405).json({ error: "Error: Method Not Allowed" });
   }
 
   try {
@@ -12,14 +13,13 @@ export default async function handler(req, res) {
 
     if (!apiKey) {
       console.error("❌ Missing API Key");
-      return res.status(500).json({ error: "Missing API Key" });
+      return res.status(500).json({ error: "Error: Missing API Key" });
     }
 
     console.log("🔑 API Key Loaded");
 
-    const { sender } = req.query;
+    const { sender } = req.query as { sender?: string };
 
-    // Fetch all conversations
     const conversationResponse = await axios.get(
       `https://conversations.messagebird.com/v1/conversations`,
       {
@@ -36,21 +36,21 @@ export default async function handler(req, res) {
 
     let filteredConversations = conversations;
 
-    // If sender is provided, filter by sender's phone number
+    // If sender is provided, filter by sender
     if (sender) {
       filteredConversations = conversations.filter(
-        (conv) => conv.contact?.msisdn === sender
+        (conv: any) => conv.contact?.msisdn === sender
       );
 
       if (filteredConversations.length === 0) {
-        return res.status(404).json({ error: "No conversation found for this sender" });
+        return res.status(404).json({ error: "Error: No conversation found for this sender" });
       }
 
       console.log(`🔍 Found ${filteredConversations.length} Conversations for Sender: ${sender}`);
     }
 
     // Fetch messages for each conversation
-    const messageRequests = filteredConversations.map(async (conversation) => {
+    const messageRequests = filteredConversations.map(async (conversation: any) => {
       try {
         const messagesResponse = await axios.get(
           `https://conversations.messagebird.com/v1/conversations/${conversation.id}/messages`,
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
         const messages = messagesResponse.data.items || [];
         console.log(`📩 ${messages.length} Messages for Conversation: ${conversation.id}`);
 
-        return messages.map((msg) => ({
+        return messages.map((msg: any) => ({
           conversationId: conversation.id,
           from: {
             name: conversation.contact?.displayName || "Unknown",
@@ -74,22 +74,23 @@ export default async function handler(req, res) {
           content: msg.content?.text || "No content",
           timestamp: msg.createdDatetime,
         }));
-      } catch (error) {
+      } catch (error: any) {
         console.error(`❌ Error fetching messages for ${conversation.id}:`, error.message);
         return [];
       }
     });
 
-    // Process all promises and get results
+    // Process all promises
     const messagesResults = await Promise.allSettled(messageRequests);
     const allMessages = messagesResults
       .filter((result) => result.status === "fulfilled")
-      .flatMap((result) => result.value);
+      .flatMap((result: any) => result.value);
 
     console.log("📩 Final Messages Sent to Frontend:", allMessages);
+
     return res.status(200).json({ messages: allMessages });
-  } catch (error) {
-    console.error("❌ Error fetching conversations:", error.message);
-    return res.status(500).json({ error: "Internal Server Error" });
+  } catch (error: any) {
+    console.error("❌ Error fetching conversations:", error.message || error);
+    return res.status(500).json({ error: "Error: Internal Server Error" });
   }
 }
