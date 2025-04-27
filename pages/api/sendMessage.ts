@@ -33,8 +33,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     );
 
     return res.status(200).json({ success: true, response: response.data });
-  } catch (error: any) {
-    console.error('Message sendingg error:', error.response?.data || error.message || error);
-    return res.status(500).json({ success: false, error: error.message || 'Error: Internal Server Error' });
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error('Message sending error:', error.response?.data || error.message);
+      return res.status(500).json({ success: false, error: error.message || 'Error: Internal Server Error' });
+    } else {
+      console.error('Unknown error:', error);
+      return res.status(500).json({ success: false, error: 'Error: Internal Server Error' });
+    }
   }
 }

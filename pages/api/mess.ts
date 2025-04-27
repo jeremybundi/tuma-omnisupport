@@ -1,6 +1,35 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
+interface Conversation {
+  id: string;
+  contact?: {
+    msisdn?: string;
+    displayName?: string;
+  };
+}
+
+interface MessageItem {
+  to?: string;
+  content?: {
+    text?: string;
+  };
+  createdDatetime: string;
+}
+
+interface MessageMapped {
+  conversationId: string;
+  from: {
+    name: string;
+    phoneNumber: string;
+  };
+  to: {
+    phoneNumber: string;
+  };
+  content: string;
+  timestamp: string;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log("🚀 API Handler Started");
 
@@ -20,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { sender } = req.query as { sender?: string };
 
-    const conversationResponse = await axios.get(
+    const conversationResponse = await axios.get<{ items: Conversation[] }>(
       `https://conversations.messagebird.com/v1/conversations`,
       {
         headers: { Authorization: `AccessKey ${apiKey}` },
@@ -36,10 +65,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let filteredConversations = conversations;
 
-    // If sender is provided, filter by sender
     if (sender) {
       filteredConversations = conversations.filter(
-        (conv: any) => conv.contact?.msisdn === sender
+        (conv) => conv.contact?.msisdn === sender
       );
 
       if (filteredConversations.length === 0) {
@@ -49,10 +77,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log(`🔍 Found ${filteredConversations.length} Conversations for Sender: ${sender}`);
     }
 
-    // Fetch messages for each conversation
-    const messageRequests = filteredConversations.map(async (conversation: any) => {
+    const messageRequests = filteredConversations.map(async (conversation) => {
       try {
-        const messagesResponse = await axios.get(
+        const messagesResponse = await axios.get<{ items: MessageItem[] }>(
           `https://conversations.messagebird.com/v1/conversations/${conversation.id}/messages`,
           {
             headers: { Authorization: `AccessKey ${apiKey}` },
@@ -62,7 +89,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const messages = messagesResponse.data.items || [];
         console.log(`📩 ${messages.length} Messages for Conversation: ${conversation.id}`);
 
-        return messages.map((msg: any) => ({
+        return messages.map((msg): MessageMapped => ({
           conversationId: conversation.id,
           from: {
             name: conversation.contact?.displayName || "Unknown",
@@ -74,22 +101,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           content: msg.content?.text || "No content",
           timestamp: msg.createdDatetime,
         }));
-      } catch (error: any) {
+      } catch (err) {
+        const error = err as Error;
         console.error(`❌ Error fetching messages for ${conversation.id}:`, error.message);
         return [];
       }
     });
 
-    // Process all promises
     const messagesResults = await Promise.allSettled(messageRequests);
+
     const allMessages = messagesResults
-      .filter((result) => result.status === "fulfilled")
-      .flatMap((result: any) => result.value);
+      .filter((result): result is PromiseFulfilledResult<MessageMapped[]> => result.status === "fulfilled")
+      .flatMap((result) => result.value);
 
     console.log("📩 Final Messages Sent to Frontend:", allMessages);
 
     return res.status(200).json({ messages: allMessages });
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     console.error("❌ Error fetching conversations:", error.message || error);
     return res.status(500).json({ error: "Error: Internal Server Error" });
   }
