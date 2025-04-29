@@ -1,11 +1,27 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
+interface MessageContent {
+  text?: string;
+  interactive?: {
+    type: string;
+    body?: { text: string };
+    reply?: { id: string; text: string };
+    action?: {
+      buttons?: Array<{
+        id: string;
+        title: string;
+        selected?: boolean;
+      }>;
+    };
+  };
+}
+
 interface Message {
   id: string;
   from: string;
   to: string;
-  content: any;
+  content: MessageContent;
   type: string;
   createdDatetime: string;
   status?: string;
@@ -113,7 +129,7 @@ async function fetchMessagesForConversation(
 
     const formattedMessages: FormattedMessage[] = messages.map((msg) => {
       const isInteractive = msg.content?.interactive;
-      const isButtonReply = isInteractive && msg.content.interactive.type === "button_reply";
+      const isButtonReply = msg.content?.interactive?.type === "button_reply";
 
       let contentText = "No content";
 
@@ -148,13 +164,12 @@ async function fetchMessagesForConversation(
         type: msg.type || "text",
         isFromUser: msg.from === userNumber,
         buttons: isInteractive && Array.isArray(msg.content?.interactive?.action?.buttons)
-        ? (msg.content.interactive.action.buttons as { id: string; title: string; selected?: boolean }[]).map((btn) => ({
-            id: btn.id,
-            title: btn.title,
-            selected: btn.selected || false,
-          }))
-        : [],
-      
+          ? (msg.content.interactive.action.buttons as { id: string; title: string; selected?: boolean }[]).map((btn) => ({
+              id: btn.id,
+              title: btn.title,
+              selected: btn.selected || false,
+            }))
+          : [],
         timestamp: msg.createdDatetime,
       };
     });
