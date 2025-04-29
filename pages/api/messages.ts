@@ -1,6 +1,48 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
+interface Message {
+  id: string;
+  from: string;
+  to: string;
+  content: any;
+  type: string;
+  createdDatetime: string;
+  status?: string;
+  error?: { code: string; description: string };
+  buttons?: Array<{ id: string; title: string; selected?: boolean }>;
+}
+
+interface Conversation {
+  id: string;
+  contact?: { displayName?: string };
+}
+
+interface ExtendedConversation extends Conversation {
+  messages: FormattedMessage[];
+  status: string;
+  hasUndeliverableMessages: boolean;
+}
+
+interface FormattedMessage {
+  id: string;
+  conversationId: string;
+  from: {
+    name: string;
+    phoneNumber: string;
+  };
+  to: {
+    phoneNumber: string;
+  };
+  content: string;
+  type: string;
+  isFromUser: boolean;
+  buttons: { id: string; title: string; selected: boolean }[];
+  timestamp: string;
+}
+
+const userNumber = "+447778024995"; // Replace with your number
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const apiKey = process.env.MESSAGEBIRD_API_KEY;
 
@@ -20,30 +62,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-async function handleGetConversations(req: NextApiRequest, res: NextApiResponse, apiKey: string) {
+async function handleGetConversations(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  apiKey: string
+) {
   try {
-    // Fetching conversations
-    const conversationResponse = await axios.get(
+    const conversationResponse = await axios.get<{ items: Conversation[] }>(
       `https://conversations.messagebird.com/v1/conversations`,
       { headers: { Authorization: `AccessKey ${apiKey}` } }
     );
 
     const conversations = conversationResponse.data.items || [];
 
-    if (conversations.length === 0) {
-      return res.status(200).json({ conversations: [] });
-    }
-
-    // Fetching messages for each conversation and filter out undeliverable ones and self-sent messages
-    const conversationsWithMessages = await Promise.all(
-      conversations.map((conversation: any) => fetchMessagesForConversation(conversation, apiKey))
+    const conversationsWithMessages: ExtendedConversation[] = await Promise.all(
+      conversations.map((conversation) =>
+        fetchMessagesForConversation(conversation, apiKey)
+      )
     );
 
-    // Filter out conversations with undeliverable messages or where the sender is your number
     const filteredConversations = conversationsWithMessages.filter(
-      (conversation: any) => 
-        !conversation.hasUndeliverableMessages && 
-        conversation.messages.some((msg: any) => msg.from !== '+447778024995')
+      (conversation) =>
+        !conversation.hasUndeliverableMessages &&
+        conversation.messages.some((msg) => msg.from.phoneNumber !== userNumber)
     );
 
     return res.status(200).json({ conversations: filteredConversations });
@@ -53,26 +94,24 @@ async function handleGetConversations(req: NextApiRequest, res: NextApiResponse,
   }
 }
 
-async function fetchMessagesForConversation(conversation: any, apiKey: string) {
+async function fetchMessagesForConversation(
+  conversation: Conversation,
+  apiKey: string
+): Promise<ExtendedConversation> {
   try {
-    // Fetching messages for a specific conversation
-    const messagesResponse = await axios.get(
+    const messagesResponse = await axios.get<{ items: Message[] }>(
       `https://conversations.messagebird.com/v1/conversations/${conversation.id}/messages`,
       { headers: { Authorization: `AccessKey ${apiKey}` } }
     );
 
     const messages = messagesResponse.data.items || [];
 
-    // Check if the user (your number) has replied
-    const userNumber = "+447778024995"; // Replace with your actual number
-    const userReplied = messages.some((msg: any) => msg.from === userNumber);
+    const userReplied = messages.some((msg) => msg.from === userNumber);
     const status = userReplied ? "in-progress" : "unread";
 
-    // Check if any message has failed delivery (undeliverable)
-    const hasUndeliverableMessages = messages.some((msg: any) => msg.status === 'failed');
+    const hasUndeliverableMessages = messages.some((msg) => msg.status === 'failed');
 
-    // Format messages and handle errors
-    const formattedMessages = messages.map((msg: any) => {
+    const formattedMessages: FormattedMessage[] = messages.map((msg) => {
       const isInteractive = msg.content?.interactive;
       const isButtonReply = isInteractive && msg.content.interactive.type === "button_reply";
 
@@ -86,15 +125,13 @@ async function fetchMessagesForConversation(conversation: any, apiKey: string) {
         contentText = msg.content.text;
       }
 
-      // Handling failed delivery
       if (msg.status === "failed") {
-        console.log(`Message failed with error code: ${msg.error.code}`);
-        console.log(`Error description: ${msg.error.description}`);
+        console.log(`Message failed with error code: ${msg.error?.code}`);
+        console.log(`Error description: ${msg.error?.description}`);
         console.log(`Failed message: ${JSON.stringify(msg)}`);
       }
 
-      // Selecting button if the message is interactive
-      const selectedButton = msg.buttons?.find((btn: any) => btn.selected);
+      const selectedButton = msg.buttons?.find((btn) => btn.selected);
       const responseText = selectedButton
         ? `Customer selected "${selectedButton.title}"`
         : contentText;
@@ -110,13 +147,14 @@ async function fetchMessagesForConversation(conversation: any, apiKey: string) {
         content: responseText,
         type: msg.type || "text",
         isFromUser: msg.from === userNumber,
-        buttons: isInteractive
-          ? msg.content?.interactive?.action?.buttons?.map((btn: any) => ({
-              id: btn.id,
-              title: btn.title,
-              selected: btn.selected || false,
-            })) || []
-          : [],
+        buttons: isInteractive && Array.isArray(msg.content?.interactive?.action?.buttons)
+        ? (msg.content.interactive.action.buttons as { id: string; title: string; selected?: boolean }[]).map((btn) => ({
+            id: btn.id,
+            title: btn.title,
+            selected: btn.selected || false,
+          }))
+        : [],
+      
         timestamp: msg.createdDatetime,
       };
     });
