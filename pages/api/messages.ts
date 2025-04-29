@@ -1,43 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import axios from "axios";
-
-interface Conversation {
-  id: string;
-  contact: {
-    displayName: string;
-  };
-}
-
-interface Message {
-  id: string;
-  from: string;
-  to: string;
-  content?: {
-    text?: string;
-    interactive?: {
-      type: string;
-      body?: {
-        text?: string;
-      };
-      action?: {
-        buttons?: {
-          id: string;
-          title: string;
-          selected?: boolean;
-        }[];
-      };
-      reply?: {
-        text: string;
-      };
-    };
-  };
-  buttons?: {
-    id: string;
-    title: string;
-    selected?: boolean;
-  }[];
-  createdDatetime: string;
-}
+import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const apiKey = process.env.MESSAGEBIRD_API_KEY;
@@ -53,14 +15,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: "Error: Method Not Allowed" });
     }
   } catch (error) {
-    console.error('Handler error:', error);
+    console.error('Error:', error);
     return res.status(500).json({ error: "Error: Internal Server Error" });
   }
 }
 
 async function handleGetConversations(req: NextApiRequest, res: NextApiResponse, apiKey: string) {
   try {
-    const conversationResponse = await axios.get<{ items: Conversation[] }>(
+    // Fetching conversations
+    const conversationResponse = await axios.get(
       `https://conversations.messagebird.com/v1/conversations`,
       { headers: { Authorization: `AccessKey ${apiKey}` } }
     );
@@ -71,43 +34,67 @@ async function handleGetConversations(req: NextApiRequest, res: NextApiResponse,
       return res.status(200).json({ conversations: [] });
     }
 
+    // Fetching messages for each conversation and filter out undeliverable ones and self-sent messages
     const conversationsWithMessages = await Promise.all(
-      conversations.map((conversation) => fetchMessagesForConversation(conversation, apiKey))
+      conversations.map((conversation: any) => fetchMessagesForConversation(conversation, apiKey))
     );
 
-    return res.status(200).json({ conversations: conversationsWithMessages });
+    // Filter out conversations with undeliverable messages or where the sender is your number
+    const filteredConversations = conversationsWithMessages.filter(
+      (conversation: any) => 
+        !conversation.hasUndeliverableMessages && 
+        conversation.messages.some((msg: any) => msg.from !== '+447778024995')
+    );
+
+    return res.status(200).json({ conversations: filteredConversations });
   } catch (error) {
-    console.error('handleGetConversations error:', error);
-    return res.status(500).json({ error: "Error: Internal Server Error" });
+    console.error('Error fetching conversations:', error);
+    return res.status(500).json({ error: "Error: Failed to fetch conversations" });
   }
 }
 
-async function fetchMessagesForConversation(conversation: Conversation, apiKey: string) {
+async function fetchMessagesForConversation(conversation: any, apiKey: string) {
   try {
-    const messagesResponse = await axios.get<{ items: Message[] }>(
+    // Fetching messages for a specific conversation
+    const messagesResponse = await axios.get(
       `https://conversations.messagebird.com/v1/conversations/${conversation.id}/messages`,
       { headers: { Authorization: `AccessKey ${apiKey}` } }
     );
 
     const messages = messagesResponse.data.items || [];
 
-    const userReplied = messages.some((msg) => msg.from === "+447778024995");
+    // Check if the user (your number) has replied
+    const userNumber = "+447778024995"; // Replace with your actual number
+    const userReplied = messages.some((msg: any) => msg.from === userNumber);
     const status = userReplied ? "in-progress" : "unread";
 
-    const formattedMessages = messages.map((msg) => {
-      const isInteractive = msg.content?.interactive;
-      const isButtonReply = isInteractive && msg.content?.interactive?.type === "button_reply";
+    // Check if any message has failed delivery (undeliverable)
+    const hasUndeliverableMessages = messages.some((msg: any) => msg.status === 'failed');
 
-      let contentText: string;
+    // Format messages and handle errors
+    const formattedMessages = messages.map((msg: any) => {
+      const isInteractive = msg.content?.interactive;
+      const isButtonReply = isInteractive && msg.content.interactive.type === "button_reply";
+
+      let contentText = "No content";
+
       if (isButtonReply) {
-        contentText = msg.content?.interactive?.reply?.text ?? "No content";
+        contentText = msg.content.interactive?.reply?.text || "No content";
       } else if (isInteractive) {
-        contentText = msg.content?.interactive?.body?.text ?? "No content";
-      } else {
-        contentText = msg.content?.text ?? "No content";
+        contentText = msg.content.interactive?.body?.text || "No content";
+      } else if (msg.content?.text) {
+        contentText = msg.content.text;
       }
 
-      const selectedButton = msg.buttons?.find((btn) => btn.selected);
+      // Handling failed delivery
+      if (msg.status === "failed") {
+        console.log(`Message failed with error code: ${msg.error.code}`);
+        console.log(`Error description: ${msg.error.description}`);
+        console.log(`Failed message: ${JSON.stringify(msg)}`);
+      }
+
+      // Selecting button if the message is interactive
+      const selectedButton = msg.buttons?.find((btn: any) => btn.selected);
       const responseText = selectedButton
         ? `Customer selected "${selectedButton.title}"`
         : contentText;
@@ -121,12 +108,14 @@ async function fetchMessagesForConversation(conversation: Conversation, apiKey: 
         },
         to: { phoneNumber: msg.to || "Unknown" },
         content: responseText,
+        type: msg.type || "text",
+        isFromUser: msg.from === userNumber,
         buttons: isInteractive
-          ? msg.content?.interactive?.action?.buttons?.map((btn) => ({
+          ? msg.content?.interactive?.action?.buttons?.map((btn: any) => ({
               id: btn.id,
               title: btn.title,
               selected: btn.selected || false,
-            })) ?? []
+            })) || []
           : [],
         timestamp: msg.createdDatetime,
       };
@@ -136,9 +125,10 @@ async function fetchMessagesForConversation(conversation: Conversation, apiKey: 
       ...conversation,
       messages: formattedMessages,
       status,
+      hasUndeliverableMessages,
     };
   } catch (error) {
-    console.error('fetchMessagesForConversation error:', error);
-    return { ...conversation, messages: [], status: "error" };
+    console.error(`Error fetching messages for conversation ${conversation.id}:`, error);
+    return { ...conversation, messages: [], status: "error", hasUndeliverableMessages: false };
   }
 }

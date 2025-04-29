@@ -105,7 +105,7 @@ export default function SideNav() {
 
             {/* Settings Text */}
             <span className="text-lg font-medium transition duration-300 ease-in-out">
-              Kplc Transactions
+              KPLC Transactions
             </span>
           </button>
         </Link>
