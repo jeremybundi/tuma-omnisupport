@@ -139,21 +139,18 @@ useEffect(() => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="">
         <table className="min-w-full text-[12px] font-poppins text-left">
           <thead>
             <tr className="bg-gray-100 text-gray-500 whitespace-nowrap">
               <th className="p-3 font-semibold">Transaction ID</th>
-              <th className="p-3 font-semibold">Transaction Key</th>
               <th className="p-3 font-semibold">Sender Name</th>
               <th className="p-3 font-semibold">Type</th>
               <th className="p-3 font-semibold">Account No</th>
               <th className="p-3 font-semibold">Sender Phone</th>
-              <th className="p-3 font-semibold">Receiver</th>
-              <th className="p-3 font-semibold">Sender Amount (GBP)</th>
-              <th className="p-3 font-semibold">Recipient Amount (KES)</th>
+              <th className="p-3 font-semibold">Sender Amount</th>
+              <th className="p-3 font-semibold">Recipient Amount</th>
               <th className="p-3 font-semibold">Exchange Rate</th>
-              <th className="p-3 font-semibold">Date</th>
               <th className="p-3 font-semibold">Status</th>
             </tr>
           </thead>
@@ -165,18 +162,14 @@ useEffect(() => {
                 onClick={() => setSelectedTransaction(transaction)}
               >
                 <td className="p-3">{transaction.transactionId}</td>
-                <td className="p-3">{transaction.transactionKey}</td>
                 <td className="p-3">{transaction.senderName}</td>
                 <td className="p-3">{transaction.transactionType}</td>
                 <td className="p-3">{transaction.accountNumber}</td>
                 <td className="p-3">{transaction.senderPhone}</td>
-                <td className="p-3">{transaction.receiverName}</td>
                 <td className="p-3 text-center">{transaction.senderAmount}</td>
                 <td className="p-3 text-center">{transaction.recipientAmount}</td>
                 <td className="p-3 text-center">{transaction.exchangeRate}</td>
-                <td className="p-3">
-                  {new Date(transaction.date).toLocaleString()}
-                </td>
+             
                 <td className="p-3">
                   <span
                     className={`p-1 px-2 rounded-xl w-fit inline-block ${

@@ -53,29 +53,37 @@ const Success = ({ transaction }) => {
       </p>
 
       <ul className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm text-left">
-        <li className="text-gray-500">Transaction ID:</li>
-        <li>{transaction.transactionId}</li>
+      <li className="text-gray-500">Transaction ID:</li>
+      <li>{transaction.transactionId}</li>
 
-        <li className="text-gray-500">Transaction Key:</li>
-        <li>{transaction.transactionKey}</li>
+      <li className="text-gray-500">Transaction Key:</li>
+      <li>{transaction.transactionKey}</li>
 
-        <li className="text-gray-500">Transaction Reference:</li>
-        <li>{transaction.transactionReference}</li>
+      <li className="text-gray-500">Sender Phone:</li>
+      <li>{transaction.senderPhone}</li>
 
-        <li className="text-gray-500">Transaction Type:</li>
-        <li>{transaction.transactionType}</li>
+      <li className="text-gray-500">Transaction Type:</li>
+      <li>{transaction.transactionType}</li>
 
-        <li className="text-gray-500">Account Number:</li>
-        <li>{transaction.accountNumber}</li>
+      <li className="text-gray-500">Account Number:</li>
+      <li>{transaction.accountNumber}</li>
 
-        <li className="text-gray-500">Receiver Name:</li>
-        <li>{transaction.receiverName}</li>
+      <li className="text-gray-500">Receiver Name:</li>
+      <li>{transaction.receiverName}</li>
 
-        <li className="text-gray-500">Sender Amount:</li>
-        <li>{transaction.senderAmount}</li>
+      <li className="text-gray-500">Sender Amount (GBP):</li>
+      <li>{transaction.senderAmount}</li>
 
-        <li className="text-gray-500">Exchange Rate:</li>
-        <li>{transaction.exchangeRate}</li>
+      <li className="text-gray-500">Recipient Amount (KES):</li>
+      <li>{transaction.recipientAmount}</li>
+
+      <li className="text-gray-500">Exchange Rate:</li>
+      <li>{transaction.exchangeRate}</li>
+
+      <li className="text-gray-500">Date:</li>
+      <li>{transaction.date}</li>
+
+    
       </ul>
 
       <hr className="mt-6" />
