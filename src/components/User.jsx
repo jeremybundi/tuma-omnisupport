@@ -5,6 +5,7 @@ import logImage from '../../public/images/log.png';
 import accountImage from '../../public/images/account.png';
 import notificationImage from '../../public/images/notification.png';
 import settingImage from '../../public/images/logout.png';
+import {FiChevronRight} from 'react-icons/fi';
 
 export default function User() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,11 +56,9 @@ export default function User() {
         </div>
 
         <div className="ml-1">
-          {/* Use Image component for log.png */}
-          <div className="inline-block mt-2">
-          <Image src={logImage} alt="Log" width={25} height={20} />
-
-          </div>
+        <div className="mr-1 flex items-center">
+          <FiChevronRight className="rotate-90 mt-2 text-white text-2xl font-medium" />
+        </div>
         </div>
       </div>
 
